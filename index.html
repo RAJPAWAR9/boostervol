@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BOOSTER OS 3.0V ULTRA — Spotify & Apple Music Hybrid Engine</title>
+<title>BOOSTER OS 3.0V ULTRA — BOOSTER & RAJ PAWAR Music Hybrid Engine</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -304,7 +304,7 @@ body.tv-mode .track-artist{font-size:.9rem;}
   <aside class="sidebar">
     <div>
       <div class="brand"><span class="mark">⚡</span> <div>BOOSTER OS<br><small>3.0V HYBRID</small></div></div>
-      <div class="tagline-mini">SPOTIFY & APPLE MUSIC ENGINE</div>
+      <div class="tagline-mini">BOOSTER & RAJ PAWAR MUSIC ENGINE</div>
       <nav class="nav-menu">
         <button class="nav-item active" data-view="home">🏠 Home</button>
         <button class="nav-item" data-view="search">🔍 Search</button>
@@ -345,7 +345,7 @@ body.tv-mode .track-artist{font-size:.9rem;}
       <div class="spotlight-banner">
         <span class="spotlight-tag">BOOSTER HYBRID SPOTLIGHT</span>
         <h2 class="spotlight-title" id="spotlightTitle">Smart Recommendation Ready</h2>
-        <p class="spotlight-sub" id="spotlightSub">AutoPlay & Apple Crossfade actively integrated</p>
+        <p class="spotlight-sub" id="spotlightSub">AutoPlay & RAJ PAWAR Crossfade actively integrated</p>
         <button class="btn-action" id="resumeBtn" onclick="resumePlay()">▶ Resume Listening</button>
       </div>
 
@@ -433,11 +433,11 @@ body.tv-mode .track-artist{font-size:.9rem;}
           <h3>Extreme Bass & Crossfade</h3>
           <div class="range-control"><label>Sub-Bass Intensity <span id="subBassVal">50%</span></label><input type="range" id="subBassSlider" min="0" max="100" value="50"></div>
           <div class="toggle-row">Beat Glow Sync <label class="switch"><input type="checkbox" id="beatGlowToggle" checked><span class="slider-pill"></span></label></div>
-          <div class="range-control"><label>Apple Crossfade <span id="crossfadeVal">4s</span></label><input type="range" id="crossfadeSlider" min="0" max="12" value="4"></div>
+          <div class="range-control"><label>RAJ PAWAR Crossfade <span id="crossfadeVal">4s</span></label><input type="range" id="crossfadeSlider" min="0" max="12" value="4"></div>
         </div>
         <div class="dsp-card">
           <h3>Smart Recommendation Engine</h3>
-          <div class="toggle-row">Spotify Smart AutoPlay <label class="switch"><input type="checkbox" id="autoPlayToggle" checked><span class="slider-pill"></span></label></div>
+          <div class="toggle-row">BOOSTER Smart AutoPlay <label class="switch"><input type="checkbox" id="autoPlayToggle" checked><span class="slider-pill"></span></label></div>
           <div class="range-control"><label>Playback Speed <span id="speedVal">1.0x</span></label><input type="range" id="speedSlider" min="0.5" max="2" step="0.05" value="1"></div>
           <div class="range-control"><label>Audio Quality Stream</label>
             <select id="qualitySelect" style="width:100%;padding:8px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);">
@@ -612,7 +612,7 @@ function togglePassView(){
 }
 
 /* ==========================================================================
-   BOOSTER OS 3.0V HYBRID AUDIO ENGINE (Spotify & Apple Music Unified)
+   BOOSTER OS 3.0V HYBRID AUDIO ENGINE (BOOSTER & RAJ PAWAR Music Unified)
    Designed by RAJ
    ========================================================================== */
 
@@ -717,7 +717,7 @@ function parseLRC(lrc){
   return lines.sort((a,b)=>a.time-b.time);
 }
 
-/* ================= DUAL AUDIO ENGINE & APPLE CROSSFADE ================= */
+/* ================= DUAL AUDIO ENGINE & RAJ PAWAR CROSSFADE ================= */
 let activeAudio = new Audio();
 let nextAudio = new Audio();
 [activeAudio, nextAudio].forEach(a => { a.crossOrigin = 'anonymous'; a.preload = 'auto'; });
@@ -782,7 +782,7 @@ function initAudioGraph(){
   analyser.connect(audioCtx.destination);
 }
 
-/* Play Track with Apple Crossfade & Queue Engine */
+/* Play Track with RAJ PAWAR Crossfade & Queue Engine */
 function playTrack(track, addToQueueIfMissing=true){
   initAudioGraph();
   if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
@@ -809,8 +809,8 @@ function playTrack(track, addToQueueIfMissing=true){
   saveResumeState(track,0);
 }
 
-/* Apple-Style Crossfade Trigger */
-function executeAppleCrossfade(nextTrack){
+/* RAJ PAWAR-Style Crossfade Trigger */
+function executeRAJ PAWARCrossfade(nextTrack){
   if(isCrossfading || !nextTrack) return;
   isCrossfading = true;
 
@@ -867,10 +867,10 @@ async function playNext(manual=false){
   let nextIdx = state.currentIndex + 1;
   if(state.shuffle) nextIdx = Math.floor(Math.random()*state.queue.length);
 
-  /* Spotify AutoPlay Trigger if queue finishes */
+  /* BOOSTER AutoPlay Trigger if queue finishes */
   if(nextIdx >= state.queue.length){
     if(state.autoPlay){
-      await triggerSpotifyAutoPlay();
+      await triggerBOOSTERAutoPlay();
       nextIdx = state.currentIndex + 1;
     } else if(state.repeat==='all') {
       nextIdx = 0;
@@ -890,10 +890,10 @@ function playPrev(){
 }
 
 /* Smart AutoPlay Recommendation Engine */
-async function triggerSpotifyAutoPlay(){
+async function triggerBOOSTERAutoPlay(){
   if(state.isFetchingAutoPlay) return;
   state.isFetchingAutoPlay = true;
-  toast('🤖 Spotify AutoPlay: Fetching recommendations...');
+  toast('🤖 BOOSTER AutoPlay: Fetching recommendations...');
   
   const current = currentTrack();
   const query = current ? (current.artist.split(',')[0] || current.title) : 'Trending Hindi Songs';
@@ -930,10 +930,10 @@ activeAudio.addEventListener('timeupdate', ()=>{
   if(!activeAudio.duration || isNaN(activeAudio.duration)) return;
   const rem = activeAudio.duration - activeAudio.currentTime;
 
-  /* Check Apple Crossfade Trigger */
+  /* Check RAJ PAWAR Crossfade Trigger */
   if(state.crossfade > 0 && rem <= state.crossfade && !isCrossfading && state.repeat==='off'){
     const nextT = state.queue[state.currentIndex + 1];
-    if(nextT) executeAppleCrossfade(nextT);
+    if(nextT) executeRAJ PAWARCrossfade(nextT);
   }
 
   const pct = (activeAudio.currentTime/activeAudio.duration)*100;
