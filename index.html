@@ -235,8 +235,18 @@ input[type=range]{width:100%;accent-color:var(--accent);}
     backdrop-filter:blur(20px);
     -webkit-backdrop-filter:blur(20px);
   }
-  .lyric-line{font-size:1.05rem;padding:8px 4px;}
-  .lyric-line.active{font-size:1.22rem;}
+  #lyricsContainer{
+    min-height:240px;
+    max-height:52vh;
+    height:52vh;
+    overflow-y:auto;
+    padding:10px 6px 24px;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scroll-behavior:auto;
+  }
+  .lyric-line{font-size:1.38rem;padding:14px 8px;line-height:1.6;white-space:normal;word-break:break-word;}
+  .lyric-line.active{font-size:1.62rem;line-height:1.52;}
   #vizCanvas{height:100px;}
   .np-play-circle{width:54px;height:54px;font-size:1.25rem;}
   .np-topbar{padding:12px 16px;}
@@ -323,6 +333,55 @@ body.tv-mode .track-artist{font-size:.9rem;}
   cursor:pointer;transition:.25s;box-shadow:0 6px 20px var(--glow);
 }
 .lock-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px var(--glow);}
+
+/* ===== FINAL RESPONSIVE + STABILITY PATCH ===== */
+html{overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body{min-width:0;overflow-x:hidden;overscroll-behavior-x:none;}
+img,video,canvas{max-width:100%;}
+button,input,select{font:inherit;}
+button{touch-action:manipulation;}
+.bar{touch-action:none;}
+@media (max-width:900px){
+  .main-viewport{width:100%;box-sizing:border-box;overflow-x:hidden;}
+  .grid-cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .track-card{min-width:0;overflow:hidden;}
+  .track-name,.track-artist{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .player-bar{left:0;right:0;box-sizing:border-box;}
+  .now-playing-overlay{padding-bottom:env(safe-area-inset-bottom);}
+}
+@media (max-width:600px){
+  .main-viewport{padding-left:10px!important;padding-right:10px!important;}
+  .grid-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .track-card{padding:8px!important;}
+  .track-footer{gap:4px!important;flex-wrap:wrap;}
+  .btn-small{min-height:36px;}
+  .np-topbar{padding:12px 14px;}
+  .np-mode-select{max-width:70%;}
+  .np-progress{max-width:none;}
+}
+@media (max-width:380px){
+  .grid-cards{grid-template-columns:1fr;}
+  .np-mode-btn{padding:5px 8px;font-size:.62rem;}
+}
+
+@media (max-width:600px){
+  #lyricsContainer{height:50vh;max-height:50vh;min-height:220px;}
+  .lyric-line{font-size:1.3rem;padding:13px 7px;}
+  .lyric-line.active{font-size:1.5rem;}
+}
+@media (max-width:380px){
+  #lyricsContainer{height:48vh;max-height:48vh;}
+  .lyric-line{font-size:1.22rem;}
+  .lyric-line.active{font-size:1.4rem;}
+}
+@media (orientation:landscape) and (max-width:900px){
+  .main-viewport{padding-bottom:145px!important;}
+  .now-playing-overlay{overflow-y:auto;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+}
+
 </style>
 </head>
 <body data-theme="dark">
@@ -664,18 +723,23 @@ function togglePassView(){
 const API_BASE = 'https://jiosaavn-api.raj-pawar091206.workers.dev';
 const LYRICS_BASE = 'https://lrclib.net/api';
 
+function safeJSON(key, fallback){
+  try { const raw=localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch(e){ console.warn('Storage reset:', key, e); return fallback; }
+}
+
 const state = {
   queue: [], currentIndex: -1, isPlaying: false, shuffle: false, repeat: 'off',
   volume: parseFloat(localStorage.getItem('bo_volume') || '0.8'),
   speed: 1, visualizerMode: 'spectrum', theme: localStorage.getItem('bo_theme') || 'dark',
-  favorites: JSON.parse(localStorage.getItem('bo_favorites') || '[]'),
-  recentlyPlayed: JSON.parse(localStorage.getItem('bo_recent') || '[]'),
-  playlists: JSON.parse(localStorage.getItem('bo_playlists') || '[]'),
+  favorites: safeJSON('bo_favorites', []),
+  recentlyPlayed: safeJSON('bo_recent', []),
+  playlists: safeJSON('bo_playlists', []),
   playedHistoryKeys: new Set(),
   localTracks: [],
-  lastPosition: JSON.parse(localStorage.getItem('bo_lastpos') || 'null'),
+  lastPosition: safeJSON('bo_lastpos', null),
   quality: '320kbps', crossfade: 4, autoPlay: true, gapless: true, tvMode: false,
-  eqGains: JSON.parse(localStorage.getItem('bo_eq') || '[0,0,0,0,0,0,0,0,0,0]'),
+  eqGains: safeJSON('bo_eq', [0,0,0,0,0,0,0,0,0,0]),
   activePreset: 'Normal', sleepTimerDeadline: null, isFetchingAutoPlay: false
 };
 
@@ -726,19 +790,28 @@ function normalizeLocalFile(file){
 }
 
 /* ================= API LAYER ================= */
-async function apiSearchSongs(q){ const r=await fetch(`${API_BASE}/api/search/songs?query=${encodeURIComponent(q)}&limit=20`); const j=await r.json(); return (j?.data?.results||[]).map(normalizeSong); }
-async function apiSearchAlbums(q){ const r=await fetch(`${API_BASE}/api/search/albums?query=${encodeURIComponent(q)}`); const j=await r.json(); return j?.data?.results||[]; }
-async function apiSearchArtists(q){ const r=await fetch(`${API_BASE}/api/search/artists?query=${encodeURIComponent(q)}`); const j=await r.json(); return j?.data?.results||[]; }
-async function apiSearchPlaylists(q){ const r=await fetch(`${API_BASE}/api/search/playlists?query=${encodeURIComponent(q)}`); const j=await r.json(); return j?.data?.results||[]; }
-async function apiGetAlbum(id){ const r=await fetch(`${API_BASE}/api/albums?id=${id}`); const j=await r.json(); return j?.data; }
-async function apiGetArtist(id){ const r=await fetch(`${API_BASE}/api/artists/${id}?page=0&songCount=20`); const j=await r.json(); return j?.data; }
-async function apiGetPlaylist(id){ const r=await fetch(`${API_BASE}/api/playlists?id=${id}&limit=50`); const j=await r.json(); return j?.data; }
+async function apiFetch(url, options={}){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 12000);
+  try {
+    const r = await fetch(url, {...options, signal:ctrl.signal});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+async function apiSearchSongs(q){ const j=await apiFetch(`${API_BASE}/api/search/songs?query=${encodeURIComponent(q)}&limit=20`); return (j?.data?.results||[]).map(normalizeSong); }
+async function apiSearchAlbums(q){ const j=await apiFetch(`${API_BASE}/api/search/albums?query=${encodeURIComponent(q)}`); return j?.data?.results||[]; }
+async function apiSearchArtists(q){ const j=await apiFetch(`${API_BASE}/api/search/artists?query=${encodeURIComponent(q)}`); return j?.data?.results||[]; }
+async function apiSearchPlaylists(q){ const j=await apiFetch(`${API_BASE}/api/search/playlists?query=${encodeURIComponent(q)}`); return j?.data?.results||[]; }
+async function apiGetAlbum(id){ const j=await apiFetch(`${API_BASE}/api/albums?id=${id}`); return j?.data; }
+async function apiGetArtist(id){ const j=await apiFetch(`${API_BASE}/api/artists/${id}?page=0&songCount=20`); return j?.data; }
+async function apiGetPlaylist(id){ const j=await apiFetch(`${API_BASE}/api/playlists?id=${id}&limit=50`); return j?.data; }
 
 async function fetchLyrics(track){
   try{
     const url = `${LYRICS_BASE}/search?track_name=${encodeURIComponent(track.title)}&artist_name=${encodeURIComponent(track.artist.split(',')[0])}`;
-    const r = await fetch(url, { headers: { 'Lrclib-Client': 'BoosterOS/3.0 (hybrid player)' } });
-    const list = await r.json();
+    const r = await apiFetch(url, { headers: { 'Lrclib-Client': 'BoosterOS/3.0 (hybrid player)' } });
+    const list = r;
     const hit = Array.isArray(list) ? list.find(x=>x.syncedLyrics) || list[0] : null;
     if(!hit) return null;
     if(hit.syncedLyrics){
@@ -838,10 +911,12 @@ function playTrack(track, addToQueueIfMissing=true){
   // Reset lyrics & timing state to prevent freezing
   currentLyrics = null;
   activeLyricIndex = -1;
+  lyricsRequestToken++;
+  if (lyricScrollFrame) { cancelAnimationFrame(lyricScrollFrame); lyricScrollFrame = 0; }
 
   activeAudio.src = track.streamUrl;
   activeAudio.playbackRate = state.speed;
-  activeAudio.play().then(()=>{ state.isPlaying=true; updatePlayButtons(); }).catch(()=>{});
+  activeAudio.play().then(()=>{ state.isPlaying=true; updatePlayButtons(); }).catch(err=>{ state.isPlaying=false; updatePlayButtons(); toast('Unable to play this track'); console.warn('Playback error:',err); });
 
   addToRecent(track);
   updateNowPlayingUI(track);
@@ -852,43 +927,68 @@ function playTrack(track, addToQueueIfMissing=true){
   saveResumeState(track,0);
 }
 
-function executeAppleCrossfade(nextTrack){
-  if(isCrossfading || !nextTrack) return;
+async function executeAppleCrossfade(nextTrack){
+  if(isCrossfading || !nextTrack || !audioCtx) return;
   isCrossfading = true;
-
-  nextAudio.src = nextTrack.streamUrl;
-  nextAudio.playbackRate = state.speed;
-  nextAudio.currentTime = 0;
-  nextAudio.play();
-
-  const fadeDur = state.crossfade;
-  const now = audioCtx.currentTime;
-
-  activeGainNode.gain.setValueAtTime(1, now);
-  activeGainNode.gain.linearRampToValueAtTime(0, now + fadeDur);
-
-  nextGainNode.gain.setValueAtTime(0, now);
-  nextGainNode.gain.linearRampToValueAtTime(1, now + fadeDur);
-
-  setTimeout(() => {
-    let tempAudio = activeAudio; activeAudio = nextAudio; nextAudio = tempAudio;
-    let tempGain = activeGainNode; activeGainNode = nextGainNode; nextGainNode = tempGain;
-
-    nextAudio.pause();
+  const fadeDur = Math.max(0, Number(state.crossfade)||0);
+  const oldActive = activeAudio;
+  const oldNext = nextAudio;
+  const oldActiveGain = activeGainNode;
+  const oldNextGain = nextGainNode;
+  try {
+    oldNext.pause();
+    oldNext.src = nextTrack.streamUrl;
+    oldNext.load();
+    oldNext.playbackRate = state.speed;
+    oldNext.currentTime = 0;
+    oldNextGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    oldActiveGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    const now = audioCtx.currentTime;
+    oldActiveGain.gain.setValueAtTime(1, now);
+    oldNextGain.gain.setValueAtTime(0, now);
+    if(fadeDur <= 0){
+      await oldNext.play();
+    } else {
+      await oldNext.play();
+      oldActiveGain.gain.linearRampToValueAtTime(0, now + fadeDur);
+      oldNextGain.gain.linearRampToValueAtTime(1, now + fadeDur);
+    }
+    setTimeout(() => {
+      if(activeAudio !== oldActive || nextAudio !== oldNext) return;
+      activeAudio = oldNext;
+      nextAudio = oldActive;
+      activeGainNode = oldNextGain;
+      nextGainNode = oldActiveGain;
+      nextAudio.pause();
+      nextAudio.currentTime = 0;
+      nextGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      nextGainNode.gain.value = 0;
+      activeGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      activeGainNode.gain.value = 1;
+      isCrossfading = false;
+      state.currentIndex = state.queue.findIndex(t => trackKey(t) === trackKey(nextTrack));
+      state.isPlaying = true;
+      currentLyrics = null;
+      activeLyricIndex = -1;
+      lyricsRequestToken++;
+      addToRecent(nextTrack);
+      updateNowPlayingUI(nextTrack);
+      fetchAndRenderLyrics(nextTrack);
+      extractAndApplyColors(nextTrack);
+      setMediaSessionMeta(nextTrack);
+      renderQueueViews();
+      updatePlayButtons();
+    }, fadeDur * 1000);
+  } catch(e){
+    // If the preloaded recommendation cannot play, fall back to normal playback.
+    oldNext.pause();
     isCrossfading = false;
-    
-    currentLyrics = null;
-    activeLyricIndex = -1;
-
-    state.currentIndex = state.queue.findIndex(t => trackKey(t) === trackKey(nextTrack));
-    
-    addToRecent(nextTrack);
-    updateNowPlayingUI(nextTrack);
-    fetchAndRenderLyrics(nextTrack);
-    extractAndApplyColors(nextTrack);
-    setMediaSessionMeta(nextTrack);
-    renderQueueViews();
-  }, fadeDur * 1000);
+    if(activeAudio === oldActive){
+      oldActiveGain.gain.value = 1;
+      oldNextGain.gain.value = 0;
+    }
+    console.warn('Crossfade error:', e);
+  }
 }
 
 function addToRecent(track){
@@ -896,13 +996,18 @@ function addToRecent(track){
   saveLS();
 }
 
-function togglePlay(){
+async function togglePlay(){
   if(!activeAudio.src) return;
   initAudioGraph();
-  if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
-  if(state.isPlaying){ activeAudio.pause(); if(isCrossfading) nextAudio.pause(); state.isPlaying=false; }
-  else { activeAudio.play(); if(isCrossfading) nextAudio.play(); state.isPlaying=true; }
-  updatePlayButtons();
+  try { if(audioCtx && audioCtx.state==='suspended') await audioCtx.resume(); } catch(e) {}
+  if(state.isPlaying){
+    activeAudio.pause(); if(isCrossfading) nextAudio.pause();
+    state.isPlaying=false; updatePlayButtons();
+  } else {
+    try { await activeAudio.play(); if(isCrossfading) await nextAudio.play(); state.isPlaying=true; }
+    catch(e){ state.isPlaying=false; toast('Unable to resume playback'); console.warn('Playback resume error:',e); }
+    updatePlayButtons();
+  }
 }
 
 async function playNext(manual=false){
@@ -969,30 +1074,41 @@ function updatePlayButtons(){
 }
 function currentTrack(){ return state.queue[state.currentIndex] || null; }
 
-activeAudio.addEventListener('timeupdate', ()=>{
-  if(!activeAudio.duration || isNaN(activeAudio.duration)) return;
-  const rem = activeAudio.duration - activeAudio.currentTime;
+// IMPORTANT: both audio elements need the same live playback listener.
+// During crossfade the active/next audio objects are swapped. Listening only
+// to the original activeAudio makes the timer, progress bar, waveform state
+// and synced lyrics freeze on the old track after the first recommendation.
+function handleAudioTimeUpdate(audio){
+  if(audio !== activeAudio) return;
+  if(!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+
+  const currentTime = audio.currentTime || 0;
+  const rem = audio.duration - currentTime;
 
   if(state.crossfade > 0 && rem <= state.crossfade && !isCrossfading && state.repeat==='off'){
     const nextT = state.queue[state.currentIndex + 1];
     if(nextT) executeAppleCrossfade(nextT);
   }
 
-  const pct = (activeAudio.currentTime/activeAudio.duration)*100;
+  const pct = Math.max(0, Math.min(100, (currentTime/audio.duration)*100));
   document.getElementById('progressFill').style.width = pct+'%';
   document.getElementById('npFill').style.width = pct+'%';
-  document.getElementById('timeCurrent').textContent = formatTime(activeAudio.currentTime);
-  document.getElementById('timeTotal').textContent = formatTime(activeAudio.duration);
-  document.getElementById('npTimeCurrent').textContent = formatTime(activeAudio.currentTime);
-  document.getElementById('npTimeTotal').textContent = formatTime(activeAudio.duration);
-  updateActiveLyric(activeAudio.currentTime);
+  document.getElementById('timeCurrent').textContent = formatTime(currentTime);
+  document.getElementById('timeTotal').textContent = formatTime(audio.duration);
+  document.getElementById('npTimeCurrent').textContent = formatTime(currentTime);
+  document.getElementById('npTimeTotal').textContent = formatTime(audio.duration);
+  updateActiveLyric(currentTime);
   checkSleepTimer();
-  const t = currentTrack(); if(t) saveResumeState(t, activeAudio.currentTime);
-});
+  const t = currentTrack(); if(t) saveResumeState(t, currentTime);
+}
 
-activeAudio.addEventListener('ended', ()=>{ if(!isCrossfading) playNext(false); });
-activeAudio.addEventListener('play', ()=>{ state.isPlaying=true; updatePlayButtons(); });
-activeAudio.addEventListener('pause', ()=>{ if(!isCrossfading) state.isPlaying=false; updatePlayButtons(); });
+[activeAudio, nextAudio].forEach(audio=>{
+  audio.addEventListener('timeupdate', ()=>handleAudioTimeUpdate(audio));
+  audio.addEventListener('ended', ()=>{ if(audio === activeAudio && !isCrossfading) playNext(false); });
+  audio.addEventListener('play', ()=>{ if(audio === activeAudio){ state.isPlaying=true; updatePlayButtons(); } });
+  audio.addEventListener('pause', ()=>{ if(audio === activeAudio && !isCrossfading){ state.isPlaying=false; updatePlayButtons(); } });
+  audio.addEventListener('error', ()=>{ if(audio === activeAudio){ state.isPlaying=false; updatePlayButtons(); toast('Audio stream unavailable'); } });
+});
 
 function saveResumeState(track,time){
   state.lastPosition = { track, time };
@@ -1032,10 +1148,10 @@ function checkSleepTimer(){
 function handleSeek(e, barElement) {
   if (!activeAudio.duration || isNaN(activeAudio.duration)) return;
   const rect = barElement.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const width = rect.width;
-  const seekTime = (clickX / width) * activeAudio.duration;
-  activeAudio.currentTime = Math.max(0, Math.min(activeAudio.duration, seekTime));
+  const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+  if(clientX == null || !rect.width) return;
+  const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  activeAudio.currentTime = ratio * activeAudio.duration;
 }
 
 ['miniBar','npBar'].forEach(id=>{
@@ -1085,30 +1201,61 @@ function closeNowPlaying(){ document.getElementById('npOverlay').classList.remov
 
 /* ================= LYRICS ENGINE ================= */
 let currentLyrics = null, activeLyricIndex=-1;
+let lyricsRequestToken = 0;
+let lyricScrollFrame = 0;
 async function fetchAndRenderLyrics(track){
   const box = document.getElementById('lyricsContainer');
+  const token = ++lyricsRequestToken;
+  currentLyrics = null;
+  activeLyricIndex = -1;
+  if (lyricScrollFrame) { cancelAnimationFrame(lyricScrollFrame); lyricScrollFrame = 0; }
   box.innerHTML = '<div class="empty-state">Loading lyrics…</div>';
-  currentLyrics = null; activeLyricIndex=-1;
-  if(track.source==='local'){ box.innerHTML='<div class="empty-state">No lyrics for local files</div>'; return; }
+  if(track.source==='local'){
+    box.innerHTML='<div class="empty-state">No lyrics for local files</div>';
+    return;
+  }
   const data = await fetchLyrics(track);
-  if(!data || !data.lines.length){ box.innerHTML='<div class="empty-state">No lyrics found</div>'; return; }
+  // Ignore lyrics belonging to a song that is no longer current.
+  if(token !== lyricsRequestToken || trackKey(currentTrack() || {}) !== trackKey(track)) return;
+  if(!data || !data.lines.length){
+    box.innerHTML='<div class="empty-state">No lyrics found</div>';
+    return;
+  }
   currentLyrics = data;
-  box.innerHTML = data.lines.map((l,i)=>`<div class="lyric-line" data-i="${i}" data-t="${l.time}" onclick="seekToLyric(${l.time})">${l.text||'&nbsp;'}</div>`).join('');
+  box.innerHTML = data.lines.map((l,i)=>`<div class="lyric-line" data-i="${i}" data-t="${l.time}" tabindex="0" role="button" onclick="seekToLyric(${l.time})">${escapeHTML(l.text||'')}</div>`).join('');
+  // Immediately sync to the current playback position after rendering.
+  updateActiveLyric(activeAudio.currentTime || 0, true);
 }
-function seekToLyric(t){ if(activeAudio.duration) activeAudio.currentTime=t; }
-function updateActiveLyric(currentTime){
+function escapeHTML(value){
+  return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+function seekToLyric(t){ if(activeAudio.duration && Number.isFinite(t)) activeAudio.currentTime=Math.max(0,Math.min(t,activeAudio.duration)); }
+function updateActiveLyric(currentTime, force=false){
   if(!currentLyrics || !currentLyrics.synced) return;
   const lines = currentLyrics.lines;
-  let idx=-1;
-  for(let i=0;i<lines.length;i++){ if(lines[i].time<=currentTime) idx=i; else break; }
-  if(idx!==activeLyricIndex){
-    activeLyricIndex=idx;
-    document.querySelectorAll('.lyric-line').forEach(el=>el.classList.remove('active'));
-    if(idx>=0){
-      const el = document.querySelector(`.lyric-line[data-i="${idx}"]`);
-      if(el){ el.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
-    }
+  let lo=0, hi=lines.length-1, idx=-1;
+  while(lo<=hi){
+    const mid=(lo+hi)>>1;
+    if(lines[mid].time<=currentTime){ idx=mid; lo=mid+1; }
+    else hi=mid-1;
   }
+  if(!force && idx===activeLyricIndex) return;
+  activeLyricIndex=idx;
+  const box=document.getElementById('lyricsContainer');
+  const old=box.querySelector('.lyric-line.active');
+  if(old) old.classList.remove('active');
+  if(idx<0) return;
+  const el=box.querySelector(`.lyric-line[data-i="${idx}"]`);
+  if(!el) return;
+  el.classList.add('active');
+  // Do not call smooth scroll on every timeupdate; it can lock up mobile and
+  // fight the user's finger scrolling. Center only the active line.
+  if(lyricScrollFrame) cancelAnimationFrame(lyricScrollFrame);
+  lyricScrollFrame=requestAnimationFrame(()=>{
+    lyricScrollFrame=0;
+    const target=el.offsetTop - (box.clientHeight/2) + (el.offsetHeight/2);
+    box.scrollTop=Math.max(0,Math.min(target,box.scrollHeight-box.clientHeight));
+  });
 }
 
 /* Dynamic Color Engine */
@@ -1176,7 +1323,8 @@ resizeCanvases();
 
 let bassAvg=0, midAvg=0, trebleAvg=0, beatPulse=0;
 function analyzeAudio(){
-  if(!analyser){ bassAvg=midAvg=trebleAvg=0; return; }
+  if(!analyser || !freqData || !timeData || audioCtx?.state !== 'running'){
+    if(audioCtx?.state !== 'running'){ bassAvg*=0.92; beatPulse*=0.9; } bassAvg=midAvg=trebleAvg=0; return; }
   analyser.getByteFrequencyData(freqData);
   analyser.getByteTimeDomainData(timeData);
   const len=freqData.length;
@@ -1223,17 +1371,21 @@ function drawViz(){
     vizCtx.beginPath(); vizCtx.lineWidth=4; vizCtx.strokeStyle=`rgb(${r},${g},${b})`;
     const slice = w/(timeData?timeData.length:64);
     for(let i=0;i<(timeData?timeData.length:64);i++){
-      const v = timeData?timeData[i]/255:0.5; const y=v*h;
+      const v = timeData ? timeData[i]/255 : 0.5; const y=v*h;
       i===0?vizCtx.moveTo(0,y):vizCtx.lineTo(i*slice,y);
     }
     vizCtx.stroke();
   }
 }
 
-function rafLoop(){
-  analyzeAudio();
-  drawAmbient();
-  if(document.getElementById('npOverlay').classList.contains('open')) drawViz();
+let rafLast=0;
+function rafLoop(ts=0){
+  if(ts-rafLast>=33){
+    rafLast=ts;
+    analyzeAudio();
+    drawAmbient();
+    if(document.getElementById('npOverlay')?.classList.contains('open')) drawViz();
+  }
   requestAnimationFrame(rafLoop);
 }
 rafLoop();
@@ -1631,6 +1783,14 @@ document.addEventListener('keydown', e=>{
   else if(e.key==='r') cycleRepeat();
   else if(e.key==='f'){ if(document.getElementById('npOverlay').classList.contains('open')) closeNowPlaying(); else openNowPlaying(); }
 });
+
+
+/* Stability: pause visual work while page is hidden */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden && audioCtx && audioCtx.state==='running') { /* keep audio alive */ }
+});
+window.addEventListener('error',e=>console.warn('BOOSTER runtime error:',e.error||e.message));
+window.addEventListener('unhandledrejection',e=>console.warn('BOOSTER promise rejection:',e.reason));
 
 /* Init */
 renderEQBands(); renderPresets();
