@@ -1942,8 +1942,6 @@ body{background:
 }
 </style>
 
-
-
 </head>
 <body data-theme="dark">
 
@@ -2014,7 +2012,12 @@ body{background:
           </label>
         </div>
         <div class="custom-color-note">Choose your own warm gold / almond tone — it updates the full UI, player & lyrics.</div>
-        <button type="button" class="custom-reset" id="customColorReset">↺ Reset Almond Gold</button><button type="button" class="bo-feature-btn" onclick="toast('BOOSTER Feature Center')">🚀 <span>BOOSTER FEATURE CENTER</span><b>→</b></button>
+        <button type="button" class="custom-reset" id="customColorReset">↺ Reset Almond Gold</button>
+        <div class="bo-almond-row">
+          <div><b>🍂 &nbsp; DARK ALMOND</b><span>Warm Premium Theme</span></div>
+          <button type="button" class="bo-toggle" aria-label="Dark Almond">ON<span></span></button>
+        </div>
+        <button type="button" class="bo-feature-btn" onclick="toast('BOOSTER Feature Center')">🚀 <span>BOOSTER FEATURE CENTER</span><b>→</b></button>
       </div>
     </div>
   </aside>
@@ -2149,6 +2152,7 @@ body{background:
           <div class="toggle-row">Gapless Engine <label class="switch"><input type="checkbox" id="gaplessToggle" checked><span class="slider-pill"></span></label></div>
           <div class="toggle-row">🎤 Karaoke Mic <label class="switch"><input type="checkbox" id="micToggle"><span class="slider-pill"></span></label></div>
           <div class="toggle-row">🎙️ Vocal Cut (Karaoke) <label class="switch"><input type="checkbox" id="vocalCutToggle"><span class="slider-pill"></span></label></div>
+          <div class="toggle-row">🎧 L/R Split Mode <label class="switch"><input type="checkbox" id="splitModeToggle"><span class="slider-pill"></span></label></div>
           <div style="font-size:.62rem;color:var(--text-dim);line-height:1.4;margin-top:5px">L/R Split is a stereo-channel effect, not AI vocal separation.</div>
           <div class="range-control"><label>Mic Monitor <span id="micGainVal">35%</span></label><input type="range" id="micGainSlider" min="0" max="100" value="35"></div><div class="mic-level-wrap">MIC LEVEL <div class="mic-level"><i id="micLevelFill"></i></div></div>
         </div>
@@ -2245,7 +2249,7 @@ body{background:
       </div>
       <div class="np-secondary">
         <button id="npFavBtn" onclick="toggleFavoriteCurrent()">♡ Favorite</button>
-        <button onclick="closeNowPlaying();switchView('queue')">☰ Queue</button>
+        <button onclick="switchView('queue');closeNowPlaying()">☰ Queue</button>
         <button onclick="addCurrentToPlaylistPrompt()">＋ Playlist</button>
         <button onclick="openSleepTimerModal()">⏲️ Sleep Timer</button>
         <button class="mobile-dsp-btn" onclick="openProDSP()">🎛️ Pro DSP</button>
@@ -2389,7 +2393,7 @@ const state = {
   lastPosition: safeJSON('bo_lastpos', null),
   quality: localStorage.getItem('bo_quality') || '320kbps', crossfade: Number(localStorage.getItem('bo_crossfade') || 4), autoPlay: localStorage.getItem('bo_autoplay') !== '0', gapless: localStorage.getItem('bo_gapless') !== '0', tvMode: false, eightD: localStorage.getItem('bo_8d') === '1', eightDSpeed: Number(localStorage.getItem('bo_8d_speed') || 0.10), micEnabled: false, micMonitor: 0.35, vocalCut: localStorage.getItem('bo_vocal_cut') === '1',
   eqGains: safeJSON('bo_eq', [0,0,0,0,0,0,0,0,0,0]),
-  activePreset: 'Normal', sleepTimerDeadline: null, isFetchingAutoPlay: false, karaokeWordGlow: true, smartMixBusy: false, autoplayTarget: 8
+  activePreset: 'Normal', sleepTimerDeadline: null, isFetchingAutoPlay: false, karaokeWordGlow: true, smartMixBusy: false, autoplayTarget: 8, splitMode: false
 };
 state.karaokeWordGlow = localStorage.getItem('bo_karaoke') !== '0';
 state.micMonitor = Number(localStorage.getItem('bo_mic_monitor') ?? '0.35');
@@ -3553,18 +3557,10 @@ function toggleKaraokeMode(){
   if(currentLyrics) updateActiveLyric(activeAudio.currentTime||0,true);
   localStorage.setItem('bo_karaoke',state.karaokeWordGlow?'1':'0');
 }
-async function toggleFullscreenPlayer(){
-  try{
-    /* Use the document as the fullscreen root, not #npOverlay.
-       This is important: dialogs, tabs, queue, DSP, artist/album panels and
-       other app overlays live outside #npOverlay and must remain renderable/clickable. */
-    if(!document.fullscreenElement){
-      const root=document.documentElement;
-      if(root?.requestFullscreen) await root.requestFullscreen({navigationUI:'hide'}).catch(()=>root.requestFullscreen().catch(()=>{}));
-    }else{
-      await document.exitFullscreen?.().catch(()=>{});
-    }
-  }catch(e){ console.warn('Fullscreen toggle failed',e); }
+function toggleFullscreenPlayer(){
+  const el=document.getElementById('npOverlay');
+  if(!document.fullscreenElement){el?.requestFullscreen?.().catch(()=>{});}
+  else document.exitFullscreen?.().catch(()=>{});
 }
 async function startSmartMix(){
   if(state.smartMixBusy)return;
@@ -4107,6 +4103,15 @@ document.getElementById('micGainSlider').addEventListener('input',e=>{state.micM
 
 const _vc=document.getElementById('vocalCutToggle'); if(_vc) _vc.checked=!!state.vocalCut;
 _vc?.addEventListener('change',e=>{state.vocalCut=e.target.checked;localStorage.setItem('bo_vocal_cut',state.vocalCut?'1':'0');applyVocalCut();toast(state.vocalCut?'🎙️ Vocal Cut ON — Karaoke mode':'🎙️ Vocal Cut OFF');});
+
+document.getElementById('splitModeToggle')?.addEventListener('change',e=>{
+  state.splitMode=e.target.checked;
+  // Reuse the existing karaoke side-signal path: ON sends L-R side content.
+  state.vocalCut=e.target.checked;
+  const vc=document.getElementById('vocalCutToggle'); if(vc) vc.checked=state.vocalCut;
+  applyVocalCut();
+  toast(state.splitMode?'🎧 L/R Split ON — side/music emphasis':'🎧 L/R Split OFF');
+});
 
 document.getElementById('subBassSlider').addEventListener('input', e=>{
   document.getElementById('subBassVal').textContent = e.target.value+'%';
@@ -5887,15 +5892,8 @@ input[type="range"]::-webkit-slider-runnable-track{accent-color:var(--ui-accent)
       <button class="bo-premium-action" data-premium="vibe"><b>🌊 Vibe Continuity</b><span>Builds the next songs around the current song's mood and energy.</span></button>
       <button class="bo-premium-action" data-premium="rediscover"><b>🧠 Rediscover Me</b><span>Finds a familiar song you have not played much recently.</span></button>
       <button class="bo-premium-action" data-premium="dna"><b>📊 My Listening DNA</b><span>Shows the moods your recent listening naturally leans toward.</span></button>
-      <button class="bo-premium-action" data-premium="dna"><b>🧬 Song DNA</b><span>Energy, mood, tempo and vibe profile for the current song.</span></button>
-      <button class="bo-premium-action" data-premium="cinema"><b>🎬 Cinematic Mode</b><span>Minimal controls with artwork-focused presentation.</span></button>
-      <button class="bo-premium-action" data-premium="radar"><b>🌈 Vibe Radar</b><span>See the current song's energy direction.</span></button>
-      <button class="bo-premium-action" data-premium="transition"><b>🌀 Smart Transition</b><span>Use the existing transition controls when available.</span></button>
-      <button class="bo-premium-action" data-premium="universe"><b>🌌 Song Universe</b><span>Explore nearby moods and related songs from the queue.</span></button>
-      <button class="bo-premium-action" data-premium="surprise"><b>🪄 Surprise Me</b><span>Jump to a compatible queued song.</span></button>
-
     </div>
-    <div class="bo-premium-dna" id="boPremiumDna">Your Listening DNA will appear here.</div><div id="boPremiumResult" class="bo-premium-dna">Pick a premium feature above.</div>
+    <div class="bo-premium-dna" id="boPremiumDna">Your Listening DNA will appear here.</div>
   </div>
 </div>
 <script id="bo-premium-feature-hub-js">
@@ -5963,6 +5961,25 @@ input[type="range"]::-webkit-slider-runnable-track{accent-color:var(--ui-accent)
 })();
 </script>
 
+
+<!-- PREMIUM MUSIC EXPERIENCE PACK -->
+<style id="premium-experience-pack-css">
+#boPremiumHub{position:fixed;right:18px;bottom:92px;z-index:100001;display:none;width:min(430px,calc(100vw - 28px));max-height:72vh;overflow:auto;padding:16px;border:1px solid var(--border,rgba(255,255,255,.15));border-radius:24px;background:color-mix(in srgb,var(--panel,#171717) 92%,transparent);backdrop-filter:blur(24px);box-shadow:0 24px 80px rgba(0,0,0,.5);color:var(--text,#fff)}
+#boPremiumHub.open{display:block}.boPHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.boPHead b{font-size:1rem}.boPClose{border:0;background:rgba(255,255,255,.08);color:inherit;border-radius:12px;padding:7px 10px;cursor:pointer}.boPGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.boPCard{padding:13px;border:1px solid var(--border,rgba(255,255,255,.12));border-radius:17px;background:rgba(255,255,255,.045);cursor:pointer;transition:.2s}.boPCard:hover{transform:translateY(-2px);border-color:var(--accent)}.boPCard b{display:block;font-size:.78rem}.boPCard span{display:block;margin-top:5px;font-size:.62rem;opacity:.65;line-height:1.4}.boPResult{margin-top:11px;padding:12px;border-radius:16px;background:rgba(255,255,255,.04);font-size:.72rem;line-height:1.5}.boPDNA{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.boPChip{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.07);font-size:.6rem}.boPRadar{height:8px;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,.1),var(--accent),rgba(255,255,255,.1));margin-top:10px;position:relative}.boPRadar i{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 0 12px var(--accent);transform:translate(-50%,-50%);left:58%}
+@media(max-width:600px){#boPremiumHub{right:10px;bottom:138px;width:calc(100vw - 20px);max-height:68vh}.boPGrid{grid-template-columns:1fr 1fr}}
+</style>
+<div id="boPremiumHub" aria-hidden="true">
+ <div class="boPHead"><b>✨ Premium Experience</b><button class="boPClose" id="boPClose">✕</button></div>
+ <div class="boPGrid">
+  <div class="boPCard" data-premium="cinema"><b>🎬 Cinematic Mode</b><span>Minimal controls + artwork focus.</span></div>
+  <div class="boPCard" data-premium="dna"><b>🧬 Song DNA</b><span>Energy, mood, tempo & vibe profile.</span></div>
+  <div class="boPCard" data-premium="radar"><b>🌈 Vibe Radar</b><span>See the current song's energy direction.</span></div>
+  <div class="boPCard" data-premium="transition"><b>🌀 Smart Transition</b><span>Uses the existing transition controls when available.</span></div>
+  <div class="boPCard" data-premium="universe"><b>🌌 Song Universe</b><span>Explore nearby moods and related songs.</span></div>
+  <div class="boPCard" data-premium="surprise"><b>🪄 Surprise Me</b><span>Jump to a compatible queued song.</span></div>
+ </div>
+ <div id="boPremiumResult" class="boPResult">Pick a feature above.</div>
+</div>
 <script id="premium-experience-pack-js">(()=>{
 'use strict';const $=s=>document.querySelector(s), hub=$('#boPremiumHub'), result=$('#boPremiumResult');
 const getSong=()=>{try{return typeof currentTrack==='function'?currentTrack():window.state?.current||null}catch(e){return null}};
@@ -5971,7 +5988,7 @@ function dna(s){let t=(title(s)+' '+artist(s)).toLowerCase();let energy=Math.rou
 function related(){let q=window.state?.queue;if(!Array.isArray(q)||!q.length)return 'Your current queue is empty. Add a few songs and Song Universe will use them as the nearby musical space.';let s=getSong(), rows=q.filter(x=>x!==s).slice(0,5).map(x=>`<span class="boPChip">${String(title(x)).replace(/[<>&]/g,'')}</span>`).join('');return `<b>Nearby in your queue</b><div class="boPDNA">${rows}</div>`}
 function surprise(){let q=window.state?.queue;if(!Array.isArray(q)||!q.length)return 'No queue available for Surprise Me.';let i=Math.floor(Math.random()*q.length);let s=q[i];try{if(typeof playTrack==='function')playTrack(s);else if(typeof playSong==='function')playSong(s)}catch(e){}return `<b>✨ Surprise pick</b><br>${title(s)} — ${artist(s)}`}
 document.addEventListener('click',e=>{let b=e.target.closest?.('[data-premium]');if(b){let type=b.dataset.premium,s=getSong();if(type==='cinema'){document.body.classList.toggle('bo-premium-cinema');result.innerHTML='🎬 Cinematic Mode toggled. Your existing player remains untouched.'}else if(type==='dna')result.innerHTML=dna(s);else if(type==='radar')result.innerHTML=`<b>🌈 Vibe Radar</b><br>Current energy is mapped from the song context.<div class="boPRadar"><i></i></div><span>Low energy ← vibe → High energy</span>`;else if(type==='transition'){try{if(typeof toggleCrossfade==='function')toggleCrossfade();else if(typeof openCrossfade==='function')openCrossfade();}catch(e){}result.innerHTML='🌀 Smart Transition opened through the existing audio controls.'}else if(type==='universe')result.innerHTML=related();else if(type==='surprise')result.innerHTML=surprise()}});
-window.BoosterPremium=Object.assign(window.BoosterPremium||{}, {open(){hub?.classList.add('open');hub?.setAttribute('aria-hidden','false')}});
+$('#boPClose')?.addEventListener('click',()=>{hub.classList.remove('open');hub.setAttribute('aria-hidden','true')});window.BoosterPremium={open(){hub.classList.add('open');hub.setAttribute('aria-hidden','false')}};
 })();</script>
 <style id="premium-cinema-css">body.bo-premium-cinema .topbar,body.bo-premium-cinema .mobile-nav{opacity:.65}body.bo-premium-cinema .player-bar,body.bo-premium-cinema .bottom-player{box-shadow:0 0 50px var(--glow)!important}body.bo-premium-cinema .spotlight-banner,body.bo-premium-cinema #homeNowPlayingSpotlight{box-shadow:0 0 80px var(--glow)!important}</style>
 
@@ -6010,7 +6027,7 @@ window.boArtistAlbumStudio={open};
 <style id="top-end-ui-polish">
 :root{--premium-radius:18px;--premium-blur:22px}
 /* Consistent premium glass language */
-.boPCard,.bo-aa-card,.booster-feature-card,#boV5QueuePanel,#boV5QuickAudio,.bo-theme-card,.bo-shortcut-card,.bo-aa-launch,.bo-aa-btn,.boPResult{
+.boPCard,.bo-aa-card,.booster-feature-card,#boV5QueuePanel,#boV5QuickAudio,.bo-theme-card,.bo-shortcut-card,.bo-aa-launch,.bo-aa-btn,.boPCard,.boPResult{
   border-radius:var(--premium-radius)!important;
   backdrop-filter:blur(var(--premium-blur)) saturate(1.12);
 }
@@ -6080,930 +6097,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setTimeout(boot,1600);
 })();</script>
 
-
-<style id="bo-now-playing-theme-sync">
-/* NOW PLAYING THEME SYNC — keeps the fullscreen player visually identical to the active site theme. */
-#npOverlay{
-  --np-accent:var(--accent);
-  --np-bg:var(--bg-main);
-  --np-surface:var(--panel);
-  --np-card:var(--card);
-  --np-border:var(--border);
-  --np-text:var(--text);
-  --np-muted:var(--text-dim);
-  --np-soft:rgba(255,255,255,.055);
-  --np-strong:rgba(255,255,255,.10);
-  --np-shadow:rgba(0,0,0,.42);
-  background:var(--np-bg)!important;
-  color:var(--np-text)!important;
-  isolation:isolate;
-  transition:background .45s ease,color .35s ease;
-}
-#npOverlay .np-bg{background-color:var(--np-bg)!important;opacity:.24!important;}
-#npOverlay .np-bg::after{
-  background:radial-gradient(ellipse at center,transparent 12%,color-mix(in srgb,var(--np-bg) 18%,transparent) 48%,color-mix(in srgb,var(--np-bg) 78%,transparent) 100%)!important;
-}
-#npOverlay .np-topbar{background:linear-gradient(180deg,color-mix(in srgb,var(--np-bg) 88%,transparent),transparent)!important;}
-#npOverlay .np-close,
-#npOverlay .lyrics-mobile-btn,
-#npOverlay .np-mode-btn,
-#npOverlay .np-secondary button,
-#npOverlay .np-icon-btn{
-  color:var(--np-text)!important;
-}
-#npOverlay .np-close,
-#npOverlay .lyrics-mobile-btn,
-#npOverlay .np-mode-btn,
-#npOverlay .np-secondary button{
-  background:var(--np-soft)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:0 8px 24px color-mix(in srgb,var(--np-shadow) 45%,transparent);
-}
-#npOverlay .np-mode-btn.active,
-#npOverlay .np-secondary button.on,
-#npOverlay .np-icon-btn.on{
-  background:var(--np-accent)!important;
-  color:var(--np-accent-contrast)!important;
-  border-color:var(--np-accent)!important;
-}
-#npOverlay .np-title{color:var(--np-text)!important;text-shadow:0 2px 22px color-mix(in srgb,var(--np-accent) 24%,transparent);}
-#npOverlay .np-artist,
-#npOverlay .np-album,
-#npOverlay .np-times{color:var(--np-muted)!important;}
-#npOverlay .np-poster-wrap{
-  background:var(--np-card)!important;
-  border:1px solid var(--np-border)!important;
-  box-shadow:0 30px 70px var(--np-shadow),0 0 60px var(--glow)!important;
-}
-#npOverlay .np-center{color:var(--np-text)!important;}
-#npOverlay .np-right{
-  background:color-mix(in srgb,var(--np-surface) 88%,transparent)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--np-text) 4%,transparent),0 22px 55px var(--np-shadow);
-}
-#npOverlay .np-right h4{color:var(--np-accent)!important;}
-#npOverlay .np-play-circle{
-  background:var(--np-accent)!important;
-  color:var(--np-accent-contrast)!important;
-  box-shadow:0 0 30px var(--glow)!important;
-}
-#npOverlay .np-progress .bar{background:color-mix(in srgb,var(--np-text) 14%,transparent)!important;}
-#npOverlay .np-progress .fill{background:linear-gradient(90deg,var(--accent2),var(--np-accent))!important;box-shadow:0 0 12px var(--glow)!important;}
-#npOverlay .lyric-line{color:color-mix(in srgb,var(--np-text) 36%,transparent)!important;}
-#npOverlay .lyric-line:hover{color:color-mix(in srgb,var(--np-text) 88%,transparent)!important;background:var(--np-soft)!important;}
-#npOverlay .lyric-line.active{
-  color:var(--np-text)!important;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 18%,transparent),color-mix(in srgb,var(--np-accent) 7%,transparent),transparent 88%)!important;
-  border-left-color:var(--np-accent)!important;
-  box-shadow:0 0 20px color-mix(in srgb,var(--np-accent) 16%,transparent),inset 0 0 22px color-mix(in srgb,var(--np-accent) 7%,transparent)!important;
-}
-#npOverlay .lyric-line.active::after{color:var(--np-accent)!important;text-shadow:0 0 12px var(--np-accent)!important;}
-#npOverlay .lyric-word{color:color-mix(in srgb,var(--np-text) 40%,transparent)!important;}
-#npOverlay .lyric-word.done,
-#npOverlay .lyric-word.current{color:var(--np-text)!important;text-shadow:0 0 6px var(--np-text),0 0 15px var(--np-accent),0 0 30px var(--glow)!important;}
-#npOverlay .mobile-lyrics-card{
-  background:linear-gradient(180deg,color-mix(in srgb,var(--np-surface) 96%,transparent),color-mix(in srgb,var(--np-bg) 98%,transparent))!important;
-  border-color:var(--np-border)!important;
-}
-#npOverlay .mobile-lyrics-head strong{color:var(--np-text)!important;text-shadow:0 0 14px var(--np-accent)!important;}
-#npOverlay .mobile-lyrics-close{background:var(--np-soft)!important;border-color:var(--np-border)!important;color:var(--np-text)!important;}
-
-/* GLASS */
-body[data-theme="dark"] #npOverlay{
-  --np-bg:#060913;--np-surface:rgba(18,24,38,.72);--np-card:#0d1322;
-  --np-border:rgba(139,220,255,.16);--np-text:#f7fbff;--np-muted:#94a6bc;
-  --np-soft:rgba(139,220,255,.065);--np-strong:rgba(139,220,255,.12);--np-shadow:rgba(0,0,0,.5);
-  --np-accent-contrast:#061018;
-}
-/* ALMOND */
-body[data-theme="light"] #npOverlay{
-  --np-bg:#f1e8da;--np-surface:rgba(255,250,242,.78);--np-card:#fffaf3;
-  --np-border:rgba(111,67,37,.16);--np-text:#241b15;--np-muted:#75685d;
-  --np-soft:rgba(111,67,37,.065);--np-strong:rgba(111,67,37,.11);--np-shadow:rgba(79,50,30,.20);
-  --np-accent-contrast:#21160f;
-}
-body[data-theme="light"] #npOverlay .np-bg{filter:saturate(.82) brightness(1.06)!important;opacity:.20!important;}
-body[data-theme="light"] #npOverlay .np-poster-wrap{box-shadow:0 24px 55px rgba(79,50,30,.22),0 0 45px var(--glow)!important;}
-body[data-theme="light"] #npOverlay .lyric-line{color:rgba(36,27,21,.38)!important;}
-/* AMOLED */
-body[data-theme="amoled"] #npOverlay{
-  --np-bg:#000;--np-surface:rgba(7,7,10,.84);--np-card:#050505;
-  --np-border:rgba(167,139,250,.18);--np-text:#f8f7ff;--np-muted:#aaa4bd;
-  --np-soft:rgba(167,139,250,.065);--np-strong:rgba(167,139,250,.12);--np-shadow:rgba(0,0,0,.72);
-  --np-accent-contrast:#100b1d;
-}
-
-/* AUTO — accent is supplied by the song-color engine. The surface palette is generated from it by JS. */
-#npOverlay.bo-np-auto{
-  --np-accent-contrast:#fff;
-}
-#npOverlay.bo-np-auto.np-auto-light{
-  --np-accent-contrast:#18110a;
-}
-#npOverlay.bo-np-auto .np-bg{opacity:.25!important;}
-
-@media(max-width:600px){
-  #npOverlay .np-close,#npOverlay .lyrics-mobile-btn,#npOverlay .np-mode-btn,#npOverlay .np-secondary button{box-shadow:none;}
-}
-</style>
-<script id="bo-now-playing-theme-sync-js">
-(()=>{
-  'use strict';
-  const overlay=()=>document.getElementById('npOverlay');
-  const root=document.documentElement;
-  const clamp=n=>Math.max(0,Math.min(255,n));
-  function parseRGB(value){
-    if(!value)return null;
-    const s=String(value).trim();
-    let m=s.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
-    if(m)return [+m[1],+m[2],+m[3]];
-    m=s.match(/^#([0-9a-f]{6})$/i);
-    if(m)return [parseInt(m[1].slice(0,2),16),parseInt(m[1].slice(2,4),16),parseInt(m[1].slice(4,6),16)];
-    return null;
-  }
-  function rgbHex(rgb){return '#'+rgb.map(v=>clamp(Math.round(v)).toString(16).padStart(2,'0')).join('');}
-  function mix(a,b,p){return a.map((v,i)=>v+(b[i]-v)*p);}
-  function luminance(c){
-    const x=c.map(v=>v/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
-    return .2126*x[0]+.7152*x[1]+.0722*x[2];
-  }
-  function applyAutoPalette(el){
-    const accent=parseRGB(getComputedStyle(root).getPropertyValue('--accent'))||parseRGB(getComputedStyle(document.body).getPropertyValue('--accent'))||[201,147,91];
-    const lum=luminance(accent);
-    const light=lum>.56;
-    const bg=light?mix(accent,[255,255,255],.90):mix(accent,[3,5,10],.88);
-    const surface=light?mix(accent,[255,255,255],.82):mix(accent,[10,14,24],.78);
-    const card=light?mix(accent,[255,255,255],.72):mix(accent,[14,18,30],.72);
-    const text=light?[32,25,20]:[247,249,255];
-    const muted=light?mix(text,[110,95,80],.48):mix(text,[120,132,154],.58);
-    const border=light?`rgba(${Math.round(accent[0])},${Math.round(accent[1])},${Math.round(accent[2])},.18)`:`rgba(${Math.round(accent[0])},${Math.round(accent[1])},${Math.round(accent[2])},.16)`;
-    el.classList.toggle('np-auto-light',light);
-    el.style.setProperty('--np-accent',rgbHex(accent));
-    el.style.setProperty('--np-bg',rgbHex(bg));
-    el.style.setProperty('--np-surface',`rgba(${Math.round(surface[0])},${Math.round(surface[1])},${Math.round(surface[2])},.78)`);
-    el.style.setProperty('--np-card',rgbHex(card));
-    el.style.setProperty('--np-border',border);
-    el.style.setProperty('--np-text',rgbHex(text));
-    el.style.setProperty('--np-muted',rgbHex(muted));
-    el.style.setProperty('--np-soft',light?`rgba(90,60,30,.055)`:`rgba(255,255,255,.055)`);
-    el.style.setProperty('--np-shadow',light?'rgba(70,45,25,.20)':'rgba(0,0,0,.48)');
-  }
-  function sync(){
-    const el=overlay(); if(!el)return;
-    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
-    el.classList.toggle('bo-np-auto',auto);
-    if(auto){
-      applyAutoPalette(el);
-    }else{
-      ['--np-accent','--np-bg','--np-surface','--np-card','--np-border','--np-text','--np-muted','--np-soft','--np-shadow'].forEach(v=>el.style.removeProperty(v));
-      el.classList.remove('np-auto-light');
-    }
-  }
-  let lastTheme='',lastAccent='';
-  function watch(){
-    const el=overlay(); if(!el)return;
-    const theme=document.body.dataset.theme||'';
-    const accent=getComputedStyle(root).getPropertyValue('--accent').trim();
-    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
-    if(theme!==lastTheme || accent!==lastAccent || auto!==el.classList.contains('bo-np-auto')){
-      lastTheme=theme;lastAccent=accent;sync();
-    }else if(auto) applyAutoPalette(el);
-  }
-  const observer=new MutationObserver(()=>{sync();});
-  observer.observe(document.body,{attributes:true,attributeFilter:['data-theme']});
-  observer.observe(root,{attributes:true,attributeFilter:['style']});
-  document.addEventListener('click',e=>{
-    if(e.target.closest('[data-side-theme],[data-bo-theme],#boThemeColor,#customColorInput,#boSideColor')) setTimeout(sync,20);
-  },true);
-  window.addEventListener('storage',sync);
-  setInterval(watch,450);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
-})();
-</script>
-
-<style id="bo-now-playing-final-theme-override">
-/* FINAL NOW PLAYING SKIN: every visible surface follows the active theme. */
-#npOverlay .np-topbar,
-#npOverlay .np-left,
-#npOverlay .np-center,
-#npOverlay .np-right,
-#npOverlay .np-poster-wrap,
-#npOverlay .np-secondary,
-#npOverlay .np-karaoke-tools,
-#npOverlay .np-progress,
-#npOverlay .np-times{
-  color:var(--np-text)!important;
-}
-#npOverlay .np-left,
-#npOverlay .np-center,
-#npOverlay .np-right{
-  background:var(--np-surface)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:0 18px 55px var(--np-shadow),inset 0 1px 0 color-mix(in srgb,var(--np-text) 5%,transparent)!important;
-  backdrop-filter:blur(28px) saturate(1.12)!important;
-  -webkit-backdrop-filter:blur(28px) saturate(1.12)!important;
-}
-#npOverlay .np-topbar{
-  background:color-mix(in srgb,var(--np-bg) 78%,transparent)!important;
-  border-bottom:1px solid var(--np-border)!important;
-  backdrop-filter:blur(24px)!important;
-  -webkit-backdrop-filter:blur(24px)!important;
-}
-#npOverlay .np-poster-wrap{
-  background:var(--np-card)!important;
-  border:1px solid var(--np-border)!important;
-}
-#npOverlay .np-artist,#npOverlay .np-album,#npOverlay .np-times{color:var(--np-muted)!important;}
-#npOverlay .np-icon-btn,
-#npOverlay .np-secondary button,
-#npOverlay .np-karaoke-tools button,
-#npOverlay .lyrics-mobile-btn,
-#npOverlay .np-mode-btn,
-#npOverlay .np-close{
-  background:var(--np-soft)!important;
-  color:var(--np-text)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:none!important;
-}
-#npOverlay .np-mode-btn.active,
-#npOverlay .np-secondary button.on,
-#npOverlay .np-karaoke-tools button.active,
-#npOverlay .np-icon-btn.on{
-  background:var(--np-accent)!important;
-  color:var(--np-accent-contrast)!important;
-  border-color:var(--np-accent)!important;
-  box-shadow:0 0 22px var(--glow)!important;
-}
-#npOverlay .np-play-circle{
-  background:var(--np-accent)!important;
-  color:var(--np-accent-contrast)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:0 0 34px var(--glow)!important;
-}
-#npOverlay .np-progress .bar,
-#npOverlay .np-seek-visual .track{
-  background:color-mix(in srgb,var(--np-text) 14%,transparent)!important;
-}
-#npOverlay .np-progress .fill,
-#npOverlay .np-seek-visual .fill{
-  background:linear-gradient(90deg,var(--np-accent),var(--accent3))!important;
-  box-shadow:0 0 14px var(--glow)!important;
-}
-#npOverlay .np-seek-slider{accent-color:var(--np-accent)!important;}
-#npOverlay .np-seek-slider::-webkit-slider-thumb{background:var(--np-accent)!important;box-shadow:0 0 15px var(--glow)!important;}
-#npOverlay .np-seek-slider::-moz-range-thumb{background:var(--np-accent)!important;box-shadow:0 0 15px var(--glow)!important;}
-#npOverlay .np-right h4{color:var(--np-accent)!important;text-shadow:0 0 16px var(--glow)!important;}
-#npOverlay .lyric-line{color:color-mix(in srgb,var(--np-text) 38%,transparent)!important;}
-#npOverlay .lyric-line:hover{background:var(--np-soft)!important;color:var(--np-text)!important;}
-#npOverlay .lyric-line.active{
-  color:var(--np-text)!important;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 20%,transparent),color-mix(in srgb,var(--np-accent) 6%,transparent),transparent 90%)!important;
-  border-left-color:var(--np-accent)!important;
-  text-shadow:0 0 12px color-mix(in srgb,var(--np-accent) 55%,transparent)!important;
-}
-#npOverlay .lyric-word.done,#npOverlay .lyric-word.current{
-  color:var(--np-text)!important;text-shadow:0 0 6px var(--np-text),0 0 16px var(--np-accent),0 0 30px var(--glow)!important;
-}
-#npOverlay .mobile-lyrics-card{
-  background:var(--np-surface)!important;
-  border-color:var(--np-border)!important;
-  box-shadow:0 -25px 70px var(--np-shadow),0 -8px 35px var(--glow)!important;
-}
-#npOverlay .mobile-lyrics-head{border-bottom-color:var(--np-border)!important;}
-#npOverlay .mobile-lyrics-head strong{color:var(--np-text)!important;}
-#npOverlay .mobile-lyrics-close{background:var(--np-soft)!important;color:var(--np-text)!important;border-color:var(--np-border)!important;}
-
-/* Presets: explicitly set all Now Playing palette variables. */
-body[data-theme="dark"] #npOverlay{
-  --np-bg:#060913;--np-surface:rgba(18,24,38,.72);--np-card:#0d1322;
-  --np-border:rgba(139,220,255,.18);--np-text:#f7fbff;--np-muted:#94a6bc;
-  --np-soft:rgba(139,220,255,.07);--np-accent:var(--accent);--np-accent-contrast:#061018;--np-shadow:rgba(0,0,0,.52);
-}
-body[data-theme="light"] #npOverlay{
-  --np-bg:#f1e8da;--np-surface:rgba(255,250,242,.82);--np-card:#fffaf3;
-  --np-border:rgba(111,67,37,.18);--np-text:#241b15;--np-muted:#75685d;
-  --np-soft:rgba(111,67,37,.07);--np-accent:var(--accent);--np-accent-contrast:#21160f;--np-shadow:rgba(79,50,30,.22);
-}
-body[data-theme="amoled"] #npOverlay{
-  --np-bg:#000;--np-surface:rgba(7,7,10,.88);--np-card:#050505;
-  --np-border:rgba(167,139,250,.20);--np-text:#f8f7ff;--np-muted:#aaa4bd;
-  --np-soft:rgba(167,139,250,.07);--np-accent:var(--accent);--np-accent-contrast:#100b1d;--np-shadow:rgba(0,0,0,.76);
-}
-#npOverlay.bo-np-auto{
-  background:var(--np-bg)!important;
-}
-#npOverlay.bo-np-auto .np-left,
-#npOverlay.bo-np-auto .np-center,
-#npOverlay.bo-np-auto .np-right{
-  background:var(--np-surface)!important;
-}
-@media(max-width:600px){
-  #npOverlay .np-left,#npOverlay .np-center,#npOverlay .np-right{box-shadow:0 12px 35px var(--np-shadow)!important;}
-}
-</style>
-<script id="bo-now-playing-final-theme-watch">
-(()=>{
-  const sync=()=>{
-    const el=document.getElementById('npOverlay'); if(!el)return;
-    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
-    el.classList.toggle('bo-np-auto',auto);
-    if(auto && typeof applyAutoPalette==='function') applyAutoPalette(el);
-  };
-  window.boSyncNowPlayingTheme=sync;
-  document.addEventListener('click',e=>{
-    if(e.target.closest('[data-side-theme],[data-bo-theme]')) setTimeout(sync,30);
-  },true);
-  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-theme','class']});
-  window.addEventListener('resize',sync,{passive:true});
-  setTimeout(sync,0);
-})();
-</script>
-
-<!-- ===== NOW PLAYING FINAL THEME BINDING ===== -->
-<style id="now-playing-real-theme-fix">
-/* Now Playing MUST use the same live palette as the main website. */
-#npOverlay{
-  --np-accent:var(--ui-accent,var(--accent));
-  --np-accent-light:var(--ui-accent-light,var(--accent3));
-  --np-accent-dark:var(--ui-accent-dark,var(--accent2));
-  --np-glow:var(--ui-accent-glow,var(--glow));
-  background:
-    radial-gradient(900px 600px at 15% 15%,color-mix(in srgb,var(--np-accent) 18%,transparent),transparent 65%),
-    radial-gradient(900px 600px at 85% 85%,color-mix(in srgb,var(--np-accent) 12%,transparent),transparent 68%),
-    var(--ui-bg,#070707) !important;
-  color:var(--text,#f8f5ef) !important;
-}
-#npOverlay .np-bg{
-  opacity:.24 !important;
-  filter:blur(28px) saturate(1.15) brightness(.62) !important;
-  transform:scale(1.08);
-}
-#npOverlay .np-topbar,
-#npOverlay .np-left,
-#npOverlay .np-center,
-#npOverlay .np-right{
-  background:color-mix(in srgb,var(--ui-panel,#171717) 76%,transparent) !important;
-  border-color:color-mix(in srgb,var(--np-accent) 28%,var(--border,rgba(255,255,255,.12))) !important;
-  box-shadow:0 18px 55px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.055) !important;
-  backdrop-filter:blur(28px) saturate(1.12) !important;
-  -webkit-backdrop-filter:blur(28px) saturate(1.12) !important;
-}
-#npOverlay .np-topbar{
-  background:color-mix(in srgb,var(--ui-panel,#171717) 70%,transparent) !important;
-}
-#npOverlay .np-right{
-  background:color-mix(in srgb,var(--ui-card,#111) 74%,transparent) !important;
-}
-#npOverlay .np-title{color:var(--text,#fff)!important;text-shadow:0 2px 22px rgba(0,0,0,.48)!important}
-#npOverlay .np-artist,#npOverlay .np-album{color:var(--text-dim,#b8b8b8)!important}
-#npOverlay .np-icon-btn,
-#npOverlay .np-secondary button,
-#npOverlay .np-karaoke-tools button,
-#npOverlay .lyrics-mobile-btn{
-  background:color-mix(in srgb,var(--ui-accent) 9%,rgba(255,255,255,.035)) !important;
-  border-color:color-mix(in srgb,var(--np-accent) 28%,var(--border,rgba(255,255,255,.12))) !important;
-  color:var(--text,#f5f5f5)!important;
-}
-#npOverlay .np-icon-btn:hover,
-#npOverlay .np-secondary button:hover,
-#npOverlay .np-karaoke-tools button:hover,
-#npOverlay .lyrics-mobile-btn:hover{
-  background:color-mix(in srgb,var(--np-accent) 18%,transparent)!important;
-  border-color:color-mix(in srgb,var(--np-accent) 52%,transparent)!important;
-}
-#npOverlay .np-play-circle{
-  background:linear-gradient(145deg,var(--np-accent-light),var(--np-accent-dark))!important;
-  color:var(--ui-bg,#080808)!important;
-  border-color:color-mix(in srgb,var(--np-accent-light) 58%,transparent)!important;
-  box-shadow:0 0 35px var(--np-glow),inset 0 1px 0 rgba(255,255,255,.38)!important;
-}
-#npOverlay .np-secondary button.on,
-#npOverlay .np-karaoke-tools button.active,
-#npOverlay .karaoke-badge.active{
-  background:color-mix(in srgb,var(--np-accent) 24%,transparent)!important;
-  color:var(--np-accent-light)!important;
-  border-color:color-mix(in srgb,var(--np-accent) 58%,transparent)!important;
-  box-shadow:0 0 20px color-mix(in srgb,var(--np-accent) 20%,transparent)!important;
-}
-#npOverlay .np-right h4{color:var(--np-accent)!important;text-shadow:0 0 18px var(--np-glow)!important}
-#npOverlay .np-seek-visual .fill{background:linear-gradient(90deg,var(--np-accent-dark),var(--np-accent-light))!important;box-shadow:0 0 12px var(--np-glow)!important}
-#npOverlay .np-seek-slider{accent-color:var(--np-accent)!important}
-#npOverlay .np-seek-slider::-webkit-slider-thumb{background:var(--np-accent)!important;box-shadow:0 0 16px var(--np-glow)!important}
-#npOverlay .np-seek-slider::-moz-range-thumb{background:var(--np-accent)!important;box-shadow:0 0 16px var(--np-glow)!important}
-#npOverlay .lyric-line{color:color-mix(in srgb,var(--text,#fff) 38%,transparent)!important}
-#npOverlay .lyric-line:hover{background:color-mix(in srgb,var(--np-accent) 8%,transparent)!important;color:var(--text,#fff)!important}
-#npOverlay .lyric-line.active{
-  color:var(--text,#fff)!important;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 22%,transparent),transparent 90%)!important;
-  border-left-color:var(--np-accent)!important;
-  text-shadow:0 0 14px var(--np-glow)!important;
-  box-shadow:0 0 22px color-mix(in srgb,var(--np-accent) 12%,transparent),inset 0 0 24px color-mix(in srgb,var(--np-accent) 6%,transparent)!important;
-}
-#npOverlay .lyric-word.done,#npOverlay .lyric-word.current{color:var(--text,#fff)!important;text-shadow:0 0 7px #fff,0 0 18px var(--np-accent),0 0 34px var(--np-glow)!important}
-#npOverlay .mobile-lyrics-card{
-  background:color-mix(in srgb,var(--ui-card,#111) 94%,transparent)!important;
-  border-color:color-mix(in srgb,var(--np-accent) 30%,transparent)!important;
-  box-shadow:0 -25px 70px rgba(0,0,0,.58),0 -8px 45px var(--np-glow)!important;
-}
-#npOverlay .mobile-lyrics-head{border-bottom-color:color-mix(in srgb,var(--np-accent) 20%,transparent)!important}
-#npOverlay .mobile-lyrics-head strong{color:var(--np-accent-light)!important;text-shadow:0 0 16px var(--np-glow)!important}
-#npOverlay .mobile-lyrics-close{background:color-mix(in srgb,var(--np-accent) 8%,transparent)!important;border-color:color-mix(in srgb,var(--np-accent) 25%,transparent)!important;color:var(--text,#fff)!important}
-
-/* Explicit presets: these are intentionally different, not just accent swaps. */
-body[data-theme="dark"] #npOverlay{--np-panel-alpha:.68}
-body[data-theme="light"] #npOverlay{
-  --np-panel-alpha:.72;
-  color:#241a12!important;
-}
-body[data-theme="light"] #npOverlay .np-left,
-body[data-theme="light"] #npOverlay .np-center,
-body[data-theme="light"] #npOverlay .np-right,
-body[data-theme="light"] #npOverlay .np-topbar{
-  background:rgba(53,38,27,.72)!important;
-}
-body[data-theme="amoled"] #npOverlay{background:#000!important}
-body[data-theme="amoled"] #npOverlay .np-left,
-body[data-theme="amoled"] #npOverlay .np-center,
-body[data-theme="amoled"] #npOverlay .np-right,
-body[data-theme="amoled"] #npOverlay .np-topbar{background:rgba(8,8,12,.82)!important}
-
-/* Auto: artwork palette is live through --ui-accent / --ui-bg. */
-body.bo-np-auto #npOverlay .np-bg{opacity:.32!important;filter:blur(32px) saturate(1.28) brightness(.58)!important}
-body.bo-np-auto #npOverlay .np-left,
-body.bo-np-auto #npOverlay .np-center,
-body.bo-np-auto #npOverlay .np-right{background:color-mix(in srgb,var(--ui-panel) 68%,transparent)!important}
-</style>
-<script id="now-playing-real-theme-fix-js">
-(()=>{
-  'use strict';
-  const KEY='bo_auto_song_color';
-  const overlay=()=>document.getElementById('npOverlay');
-  function sync(){
-    const ov=overlay(); if(!ov) return;
-    const auto=localStorage.getItem(KEY)==='1';
-    document.body.classList.toggle('bo-np-auto',auto);
-    /* Keep Now Playing on the current preset while Auto owns only the live palette. */
-    const t=document.body.dataset.theme||state?.theme||'light';
-    ov.dataset.npTheme=auto?'auto':t;
-  }
-  function repaint(){
-    const ov=overlay(); if(!ov) return;
-    const t=typeof currentTrack==='function'?currentTrack():null;
-    if(document.body.classList.contains('bo-np-auto') && t && typeof window.__boExtractSongColor==='function'){
-      window.__boExtractSongColor(t);
-    }
-    sync();
-  }
-  window.__boSyncNowPlayingTheme=sync;
-  document.addEventListener('click',e=>{
-    if(e.target.closest?.('[data-bo-theme],[data-side-theme],#boThemeColor')) setTimeout(repaint,30);
-  },true);
-  window.addEventListener('storage',e=>{if(e.key===KEY||e.key==='bo_custom_accent')setTimeout(sync,0)});
-  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-theme','class']});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
-})();
-</script>
-<style id="booster-nowplaying-topbar-theme-glow">
-/* ONLY the Now Playing top bar. No glow is applied anywhere else on the website. */
-#npOverlay .np-topbar{
-  position:relative!important;
-  isolation:isolate!important;
-  border-bottom:2px solid color-mix(in srgb,var(--accent,#62c8ff) 62%,transparent)!important;
-  box-shadow:0 1px 0 color-mix(in srgb,var(--accent,#62c8ff) 20%,transparent)!important;
-}
-#npOverlay .np-topbar::after{
-  content:"";
-  position:absolute;
-  left:8%;right:8%;bottom:-2px;
-  height:4px;
-  pointer-events:none;
-  background:linear-gradient(90deg,
-    transparent,
-    color-mix(in srgb,var(--accent,#62c8ff) 68%,transparent) 18%,
-    color-mix(in srgb,var(--accent,#62c8ff) 100%,transparent) 50%,
-    color-mix(in srgb,var(--accent,#62c8ff) 68%,transparent) 82%,
-    transparent);
-  box-shadow:0 0 7px color-mix(in srgb,var(--accent,#62c8ff) 72%,transparent),0 0 18px color-mix(in srgb,var(--accent,#62c8ff) 55%,transparent),0 0 32px color-mix(in srgb,var(--accent,#62c8ff) 28%,transparent);
-  opacity:1;
-  transition:opacity .22s ease,box-shadow .22s ease;
-}
-/* Theme accent only for these two Now Playing top-bar controls. */
-#npOverlay .np-topbar .np-close,
-#npOverlay .np-topbar .lyrics-mobile-btn{
-  border-color:color-mix(in srgb,var(--accent,#62c8ff) 28%,var(--border,rgba(255,255,255,.12)))!important;
-}
-@media(prefers-reduced-motion:reduce){
-  #npOverlay .np-topbar::after{transition:none!important;}
-}
-</style>
-
-
-<style id="booster-home-nowplaying-beat-sync">
-/* HOME SCREEN ONLY: BOOSTER NOW PLAYING card */
-#homeNowPlayingSpotlight{
-  --bo-home-glow: 0;
-  --bo-home-glow-rgb: 98,200,255;
-  border-color: rgba(var(--bo-home-glow-rgb), calc(.32 + var(--bo-home-glow) * .42)) !important;
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.28),
-    0 0 calc(12px + var(--bo-home-glow) * 28px) rgba(var(--bo-home-glow-rgb), calc(.08 + var(--bo-home-glow) * .24)),
-    0 0 calc(28px + var(--bo-home-glow) * 58px) rgba(var(--bo-home-glow-rgb), calc(.035 + var(--bo-home-glow) * .16)),
-    inset 0 1px 0 rgba(255,255,255,.04) !important;
-  transition: border-color .18s linear, box-shadow .18s linear !important;
-}
-#homeNowPlayingSpotlight.bo-home-song-playing{
-  animation: boHomeNowPlayingBreath 2.8s ease-in-out infinite;
-}
-@keyframes boHomeNowPlayingBreath{
-  0%,100%{filter:brightness(1)}
-  50%{filter:brightness(calc(1 + var(--bo-home-glow) * .035))}
-}
-@media (prefers-reduced-motion: reduce){
-  #homeNowPlayingSpotlight.bo-home-song-playing{animation:none}
-}
-</style>
-<script id="booster-home-nowplaying-beat-sync-js">
-(()=>{
-  const card = document.getElementById('homeNowPlayingSpotlight');
-  if(!card) return;
-
-  const root = document.documentElement;
-  let glow = 0, last = performance.now();
-
-  function playing(){
-    try{
-      const a = window.activeAudio;
-      return !!(window.state?.isPlaying && a && !a.paused && !a.ended);
-    }catch(e){ return false; }
-  }
-
-  function accent(){
-    try{
-      const v = getComputedStyle(root).getPropertyValue('--accent').trim();
-      const m = v.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
-      if(m) return `${Math.round(+m[1])},${Math.round(+m[2])},${Math.round(+m[3])}`;
-      const h = v.match(/^#([0-9a-f]{6})$/i);
-      if(h){
-        const n=parseInt(h[1],16);
-        return `${n>>16},${(n>>8)&255},${n&255}`;
-      }
-    }catch(e){}
-    return '98,200,255';
-  }
-
-  function beat(){
-    try{
-      if(typeof window.beatPulse === 'number')
-        return Math.max(0,Math.min(1,window.beatPulse));
-    }catch(e){}
-    return 0;
-  }
-
-  function loop(now){
-    const dt=Math.min(.12,(now-last)/1000); last=now;
-    const on=playing();
-    const b=on ? beat() : 0;
-
-    /* Persistent base glow while playing; beat only modulates intensity. */
-    const target=on ? Math.min(1,.42+b*1.9) : 0;
-    const rate=1-Math.exp(-dt*(target>glow?8:5.5));
-    glow += (target-glow)*rate;
-
-    card.style.setProperty('--bo-home-glow',glow.toFixed(3));
-    card.style.setProperty('--bo-home-glow-rgb',accent());
-    card.classList.toggle('bo-home-song-playing',on);
-
-    requestAnimationFrame(loop);
-  }
-
-  requestAnimationFrame(loop);
-})();
-</script>
-
-
-
-
-
-
-
-
-<style id="booster-home-nowplaying-premium">
-/* =========================================================
-   BOOSTER HOME — NOW PLAYING PREMIUM CARD
-   Only #homeNowPlayingSpotlight is affected.
-   ========================================================= */
-#homeNowPlayingSpotlight{
-  --np-rgb: 139,92,246;
-  --np-power: 0;
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  border:1px solid rgba(var(--np-rgb),.34) !important;
-  box-shadow:
-    0 18px 55px rgba(0,0,0,.28),
-    0 0 18px rgba(var(--np-rgb),calc(.10 + var(--np-power)*.12)),
-    0 0 42px rgba(var(--np-rgb),calc(.045 + var(--np-power)*.10)) !important;
-  transition:
-    border-color .35s ease,
-    box-shadow .35s ease,
-    transform .35s ease !important;
-}
-
-/* Soft colour wash stays INSIDE the card. */
-#homeNowPlayingSpotlight::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  background:
-    radial-gradient(
-      circle at 72% 48%,
-      rgba(var(--np-rgb),calc(.04 + var(--np-power)*.10)),
-      transparent 48%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(var(--np-rgb),calc(.015 + var(--np-power)*.035)),
-      transparent 42%
-    );
-  opacity:.9;
-}
-
-/* Thin animated theme light running along the top edge. */
-#homeNowPlayingSpotlight::after{
-  content:"";
-  position:absolute;
-  left:8%;
-  right:8%;
-  top:-1px;
-  height:2px;
-  border-radius:999px;
-  pointer-events:none;
-  z-index:3;
-  background:linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(var(--np-rgb),0) 8%,
-    rgba(var(--np-rgb),.95) 50%,
-    rgba(var(--np-rgb),0) 92%,
-    transparent 100%
-  );
-  filter:blur(.15px);
-  opacity:calc(.20 + var(--np-power)*.72);
-  transform:scaleX(calc(.55 + var(--np-power)*.45));
-  transform-origin:center;
-  transition:opacity .25s ease,transform .25s ease;
-}
-
-#homeNowPlayingSpotlight > *{
-  position:relative;
-  z-index:1;
-}
-
-/* Small, premium movement only while a song is actually playing. */
-#homeNowPlayingSpotlight.np-premium-playing{
-  animation:boosterNowPlayingFloat 4.2s ease-in-out infinite;
-}
-
-@keyframes boosterNowPlayingFloat{
-  0%,100%{
-    transform:translate3d(0,0,0) scale(1);
-  }
-  50%{
-    transform:translate3d(0,-2px,0) scale(1.0015);
-  }
-}
-
-/* Artwork gets only a tiny movement — not a distracting zoom. */
-#homeNowPlayingSpotlight.np-premium-playing img{
-  animation:boosterNowPlayingArt 7s ease-in-out infinite;
-  transform-origin:center;
-}
-@keyframes boosterNowPlayingArt{
-  0%,100%{transform:scale(1) translate3d(0,0,0)}
-  50%{transform:scale(1.012) translate3d(-3px,-1px,0)}
-}
-
-@media (prefers-reduced-motion:reduce){
-  #homeNowPlayingSpotlight.np-premium-playing,
-  #homeNowPlayingSpotlight.np-premium-playing img{
-    animation:none !important;
-  }
-}
-
-@media (max-width:600px){
-  #homeNowPlayingSpotlight::after{
-    left:5%;
-    right:5%;
-  }
-}
-</style>
-
-<script id="booster-home-nowplaying-premium-js">
-(()=>{
-  const card=document.getElementById('homeNowPlayingSpotlight');
-  if(!card) return;
-
-  let last=performance.now();
-  let power=0;
-
-  function getAudio(){
-    if(window.activeAudio instanceof HTMLAudioElement) return window.activeAudio;
-    return [...document.querySelectorAll('audio')]
-      .find(a=>!a.paused && !a.ended) || document.querySelector('audio');
-  }
-
-  function getThemeRGB(){
-    const css=getComputedStyle(document.documentElement);
-    const v=css.getPropertyValue('--accent').trim();
-
-    let m=v.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s]+[\d.]+)?\s*\)/i);
-    if(m) return `${Math.round(+m[1])},${Math.round(+m[2])},${Math.round(+m[3])}`;
-
-    m=v.match(/^#([0-9a-f]{6})$/i);
-    if(m){
-      const n=parseInt(m[1],16);
-      return `${n>>16},${(n>>8)&255},${n&255}`;
-    }
-    return '139,92,246';
-  }
-
-  function frame(now){
-    const dt=Math.min(.12,(now-last)/1000);
-    last=now;
-
-    const audio=getAudio();
-    const playing=!!(audio && !audio.paused && !audio.ended);
-
-    /* Persistent base glow while playing. If Booster exposes beatPulse,
-       it gently modulates the strength; otherwise the motion remains smooth. */
-    let pulse=0;
-    try{
-      pulse=typeof window.beatPulse==='number'
-        ? Math.max(0,Math.min(1,window.beatPulse))
-        : 0;
-    }catch(e){}
-
-    const target=playing ? (.48 + pulse*.34) : 0;
-    const rate=1-Math.exp(-dt*(target>power?7.5:4.8));
-    power += (target-power)*rate;
-
-    card.style.setProperty('--np-rgb',getThemeRGB());
-    card.style.setProperty('--np-power',power.toFixed(3));
-    card.classList.toggle('np-premium-playing',playing);
-
-    requestAnimationFrame(frame);
-  }
-
-  document.addEventListener('play',e=>{
-    if(e.target instanceof HTMLAudioElement){
-      card.classList.add('np-premium-playing');
-    }
-  },true);
-
-  document.addEventListener('pause',e=>{
-    if(e.target instanceof HTMLAudioElement){
-      card.classList.remove('np-premium-playing');
-    }
-  },true);
-
-  document.addEventListener('ended',e=>{
-    if(e.target instanceof HTMLAudioElement){
-      card.classList.remove('np-premium-playing');
-    }
-  },true);
-
-  requestAnimationFrame(frame);
-})();
-</script>
-
-
-
-
-
-<style id="booster-home-nowplaying-big-glow">
-/* BOOSTER HOME: ONLY the Home Now Playing card gets the larger theme glow. */
-#homeNowPlayingSpotlight{
-  border:2px solid var(--accent)!important;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb,var(--accent) 55%,transparent),
-    0 0 28px var(--glow),
-    0 0 58px color-mix(in srgb,var(--accent) 24%,transparent),
-    0 20px 55px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.06)!important;
-  transition:box-shadow .35s ease,border-color .35s ease!important;
-}
-#homeNowPlayingSpotlight:hover{
-  box-shadow:
-    0 0 0 1px color-mix(in srgb,var(--accent) 70%,transparent),
-    0 0 36px var(--glow),
-    0 0 78px color-mix(in srgb,var(--accent) 30%,transparent),
-    0 20px 55px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.06)!important;
-}
-@supports not (color:color-mix(in srgb,red 50%,transparent)){
-  #homeNowPlayingSpotlight{box-shadow:0 0 0 1px var(--accent),0 0 30px var(--glow),0 20px 55px rgba(0,0,0,.28)!important;}
-}
-@media(max-width:600px){
-  #homeNowPlayingSpotlight{
-    border-width:2px!important;
-    box-shadow:0 0 0 1px var(--accent),0 0 22px var(--glow),0 0 42px rgba(0,0,0,.12),0 16px 38px rgba(0,0,0,.22)!important;
-  }
-}
-</style>
-
-
-<!-- FULLSCREEN STABILITY + APP-WIDE INTERACTION PATCH -->
-<style id="bo-fullscreen-stability-final">
-/* Fullscreen belongs to the whole app so every existing modal/tab can open. */
-:fullscreen{background:var(--bg-main,#0b0b0b)!important;}
-html:fullscreen,html:fullscreen body{width:100%!important;height:100%!important;min-height:100%!important;overflow:hidden!important;}
-html:fullscreen body{isolation:isolate;}
-html:fullscreen #npOverlay{z-index:2147483000!important;}
-html:fullscreen .modal-overlay,
-html:fullscreen .modal,
-html:fullscreen [role="dialog"],
-html:fullscreen .drawer,
-html:fullscreen .sheet,
-html:fullscreen .toast-container{z-index:2147482000!important;}
-/* Visual layers never steal pointer input from controls. */
-#npOverlay .np-bg,
-#npOverlay canvas,
-#npOverlay .spotlight-art-layer,
-#npOverlay .np-poster-wrap::before{pointer-events:none!important;}
-/* Never leave a transparent fullscreen layer blocking the page after exit. */
-html:not(:fullscreen) #npOverlay{isolation:isolate;}
-html.bo-fullscreen-exiting #npOverlay *{pointer-events:auto;}
-/* Keep buttons and sliders above visual/compositor layers. */
-#npOverlay .np-topbar,
-#npOverlay .np-grid,
-#npOverlay .np-controls,
-#npOverlay .np-secondary,
-#npOverlay .np-karaoke-tools,
-#npOverlay .np-progress,
-#npOverlay .np-right,
-#npOverlay .mobile-lyrics-sheet{position:relative;z-index:5;}
-#npOverlay button,#npOverlay input,#npOverlay [role="button"]{position:relative;z-index:6;pointer-events:auto;}
-/* In fullscreen, don't let accidental text/drag selection make the UI feel frozen. */
-html:fullscreen #npOverlay{user-select:none;-webkit-user-select:none;}
-</style>
-<script id="bo-fullscreen-stability-final-js">
-(()=>{
-  'use strict';
-  const root=document.documentElement;
-  const ov=()=>document.getElementById('npOverlay');
-  let lastState=!!document.fullscreenElement;
-
-  function syncFullscreenState(){
-    const fs=!!document.fullscreenElement;
-    lastState=fs;
-    root.classList.toggle('bo-fullscreen-active',fs);
-    root.classList.toggle('bo-fullscreen-exiting',!fs);
-    const player=ov();
-    if(player){
-      player.classList.toggle('browser-fullscreen',fs);
-      player.style.pointerEvents='auto';
-    }
-    /* Force a clean layout pass after browser fullscreen transitions. */
-    requestAnimationFrame(()=>{
-      try{ window.dispatchEvent(new Event('resize')); }catch(e){}
-      try{ if(typeof resizeCanvases==='function') resizeCanvases(); }catch(e){}
-    });
-  }
-
-  document.addEventListener('fullscreenchange',syncFullscreenState,{passive:true});
-  document.addEventListener('webkitfullscreenchange',syncFullscreenState,{passive:true});
-
-  /* Browser fullscreen can temporarily suppress pointer input during the
-     transition. Re-arm the interactive layer on the first user interaction. */
-  ['pointerdown','pointermove','touchstart','click'].forEach(type=>{
-    document.addEventListener(type,()=>{
-      if(document.fullscreenElement){
-        const player=ov();
-        if(player) player.style.pointerEvents='auto';
-      }
-      root.classList.remove('bo-fullscreen-exiting');
-    },{passive:true,capture:true});
-  });
-
-  /* Esc is intentionally NOT intercepted: the browser must remain in charge
-     of exiting fullscreen. We only clean the UI after the browser exits. */
-  window.addEventListener('blur',()=>{
-    if(document.fullscreenElement) requestAnimationFrame(syncFullscreenState);
-  },{passive:true});
-
-  /* Defensive recovery for code that accidentally leaves a stale fullscreen
-     class/inline pointer state behind. */
-  setInterval(()=>{
-    const fs=!!document.fullscreenElement;
-    if(fs!==lastState) syncFullscreenState();
-    const player=ov();
-    if(player && player.style.pointerEvents==='none') player.style.pointerEvents='auto';
-  },1000);
-
-  syncFullscreenState();
-})();
-</script>
 </body>
 </html>
+
