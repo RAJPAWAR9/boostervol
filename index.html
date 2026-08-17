@@ -1677,6 +1677,273 @@ body{overflow:hidden!important}
   .track-thumb-wrap{border-radius:13px 13px 8px 8px!important}
 }
 </style>
+
+<style id="bo-photo1-final-polish">
+/* ============================================================
+   BOOSTER OS — PHOTO 1 VISUAL MATCH / FINAL POLISH
+   Visual-only layer: existing JS IDs, handlers and features stay intact.
+   ============================================================ */
+:root{
+  --bo-p1-bg:#03050a;
+  --bo-p1-panel:rgba(10,13,22,.72);
+  --bo-p1-panel2:rgba(9,12,20,.9);
+  --bo-p1-border:rgba(255,255,255,.105);
+  --bo-p1-muted:#9aa2b5;
+  --bo-p1-cyan:#18dfff;
+  --bo-p1-purple:#7146ff;
+  --bo-p1-glow:rgba(83,77,255,.24);
+}
+
+/* Page frame */
+body{background:
+  radial-gradient(900px 520px at 68% 28%,rgba(48,32,115,.09),transparent 65%),
+  radial-gradient(700px 500px at 15% 70%,rgba(0,180,255,.045),transparent 68%),
+  #03050a!important;
+}
+.app-shell{gap:0!important;padding:0!important;background:transparent!important}
+.sidebar{
+  width:296px!important;flex-basis:296px!important;
+  padding:24px 14px 16px!important;
+  background:linear-gradient(180deg,rgba(4,7,13,.97),rgba(3,5,10,.985))!important;
+  border-right:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:18px 0 50px rgba(0,0,0,.22)!important;
+}
+.main-viewport{
+  padding:23px 24px 145px!important;
+  gap:20px!important;
+  background:transparent!important;
+}
+
+/* Brand */
+.brand{gap:12px!important;padding:0 10px 5px!important;font-size:1.18rem!important;letter-spacing:-.02em!important}
+.brand .mark{
+  width:50px!important;height:50px!important;border-radius:14px!important;
+  background:linear-gradient(145deg,#07111f,#0a0c19)!important;
+  border:1px solid rgba(113,70,255,.82)!important;
+  color:#f5f8ff!important;font-size:1.25rem!important;
+  box-shadow:0 0 0 1px rgba(0,220,255,.08),0 0 24px rgba(103,65,255,.34)!important;
+}
+.brand small{color:#8f7dff!important;font-size:.76rem!important;letter-spacing:.02em!important}
+.tagline-mini{margin:10px 10px 17px!important;color:#7d8598!important;font-size:.71rem!important;letter-spacing:.02em!important}
+
+/* Sidebar navigation */
+.nav-menu{gap:4px!important}
+.nav-item{
+  min-height:40px!important;padding:0 15px!important;border-radius:22px!important;
+  border:1px solid transparent!important;background:transparent!important;
+  color:#dbe0eb!important;font-size:.88rem!important;font-weight:500!important;
+  text-align:left!important;box-shadow:none!important;
+}
+.nav-item:hover{background:rgba(91,83,255,.09)!important;color:#fff!important}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(48,47,122,.75),rgba(20,22,39,.72))!important;
+  border-color:rgba(87,91,255,.23)!important;
+  color:#65e9ff!important;
+  box-shadow:inset 0 0 25px rgba(83,68,255,.12),0 0 20px rgba(58,74,255,.08)!important;
+}
+.sidebar-footer{gap:10px!important}
+.bo-credit,.bo-theme-sidebar-box,.bo-sidebar-modes{
+  border:1px solid rgba(255,255,255,.075)!important;
+  background:linear-gradient(180deg,rgba(12,16,26,.72),rgba(6,9,16,.78))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+.bo-credit{border-radius:17px!important;padding:14px!important}
+.status-dot{font-size:.69rem!important;color:#a9b0c1!important}
+.status-dot span{color:#00e889!important}
+
+/* Top search + filter pills */
+.header-bar{gap:18px!important;align-items:center!important;flex-wrap:nowrap!important}
+.search-bar{max-width:none!important;flex:1 1 520px!important}
+.search-bar input{
+  height:49px!important;padding:0 18px 0 54px!important;border-radius:25px!important;
+  background:rgba(11,14,23,.72)!important;border:1px solid rgba(255,255,255,.13)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 8px 25px rgba(0,0,0,.13)!important;
+  font-size:.92rem!important;color:#f2f4fa!important;
+}
+.search-bar input::placeholder{color:#9298a8!important}
+.search-bar::before{left:21px!important;font-size:1.05rem!important;opacity:.9!important;filter:grayscale(1)!important}
+.tabs-row{gap:9px!important;overflow:visible!important;justify-content:flex-end!important;flex:0 0 auto!important}
+.tag{
+  height:48px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:0 19px!important;border-radius:25px!important;background:rgba(7,10,18,.58)!important;
+  border:1px solid rgba(255,255,255,.13)!important;color:#edf0f8!important;font-size:.78rem!important;font-weight:600!important;
+}
+.tag:hover{border-color:rgba(106,102,255,.55)!important;background:rgba(46,43,88,.28)!important}
+.tag.active{
+  background:linear-gradient(135deg,#3c3bd4,#6c36ff)!important;color:#fff!important;border-color:rgba(122,113,255,.85)!important;
+  box-shadow:0 9px 24px rgba(75,64,255,.28),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+
+/* Section headings */
+.section-title{font-size:1.05rem!important;line-height:1.2!important;letter-spacing:-.02em!important}
+.section-title:first-letter{color:#fff}
+.section-title span.hint{font-size:.75rem!important;color:#d7dbe5!important}
+
+/* PHOTO 1 hero / Now Playing */
+.spotlight-banner#homeNowPlayingSpotlight{
+  min-height:326px!important;height:326px!important;padding:38px 38px!important;
+  border-radius:28px!important;position:relative!important;overflow:hidden!important;
+  background:#070a12!important;border:1px solid rgba(255,255,255,.12)!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.035)!important;
+  isolation:isolate!important;
+}
+.spotlight-banner#homeNowPlayingSpotlight::before{
+  content:""!important;position:absolute!important;inset:0!important;z-index:0!important;
+  background:linear-gradient(90deg,rgba(4,6,12,.995) 0%,rgba(4,6,12,.97) 30%,rgba(4,6,12,.79) 51%,rgba(4,6,12,.28) 74%,rgba(4,6,12,.06) 100%)!important;
+}
+.spotlight-banner#homeNowPlayingSpotlight::after{
+  content:""!important;position:absolute!important;inset:0!important;z-index:0!important;
+  background:radial-gradient(550px 280px at 80% 42%,rgba(115,54,22,.12),transparent 72%)!important;
+  pointer-events:none!important;
+}
+.spotlight-banner#homeNowPlayingSpotlight .spotlight-art-layer{
+  position:absolute!important;right:0!important;top:0!important;bottom:0!important;left:auto!important;
+  width:67%!important;height:100%!important;z-index:1!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;overflow:hidden!important;opacity:1!important;
+}
+.spotlight-banner#homeNowPlayingSpotlight .spotlight-art-layer::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,#070a12 0%,rgba(7,10,18,.7) 12%,rgba(7,10,18,.12) 42%,transparent 65%),linear-gradient(0deg,rgba(7,10,18,.36),transparent 24%,transparent 74%,rgba(7,10,18,.22));
+}
+.spotlight-banner#homeNowPlayingSpotlight #spotlightArt{
+  position:absolute!important;right:-1%!important;top:-7%!important;width:96%!important;height:114%!important;max-width:none!important;
+  object-fit:cover!important;object-position:center!important;opacity:1!important;z-index:1!important;
+  filter:saturate(.94) contrast(1.02)!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.32) 11%,#000 34%,#000 100%)!important;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.32) 11%,#000 34%,#000 100%)!important;
+}
+.spotlight-banner#homeNowPlayingSpotlight > :not(.spotlight-art-layer){position:relative!important;z-index:5!important}
+.spotlight-tag{
+  display:inline-flex!important;align-items:center!important;margin:0 0 14px!important;padding:8px 13px!important;border-radius:15px!important;
+  background:rgba(31,28,57,.66)!important;border:1px solid rgba(132,94,255,.78)!important;color:#f2f4ff!important;
+  font-size:.68rem!important;font-weight:700!important;letter-spacing:.01em!important;box-shadow:0 0 20px rgba(109,67,255,.11)!important;
+}
+.spotlight-title{
+  margin:0 0 9px!important;max-width:55%!important;font-size:2.02rem!important;line-height:1.08!important;
+  color:#f7f8fd!important;font-weight:800!important;letter-spacing:-.04em!important;
+}
+.spotlight-title .accent,.spotlight-title strong{color:var(--bo-p1-cyan)!important}
+.spotlight-sub{max-width:50%!important;margin:0 0 24px!important;color:#d0d5e1!important;font-size:.88rem!important;line-height:1.55!important}
+.btn-action{
+  background:linear-gradient(135deg,#18dcff 0%,#6b35ff 100%)!important;color:#fff!important;
+  border:1px solid rgba(255,255,255,.3)!important;border-radius:14px!important;padding:12px 19px!important;
+  box-shadow:0 9px 27px rgba(49,64,255,.28),inset 0 1px 0 rgba(255,255,255,.18)!important;font-weight:700!important;
+}
+.btn-action:hover{transform:translateY(-2px)!important;box-shadow:0 12px 32px rgba(49,64,255,.38)!important}
+
+/* Trending cards — compact Photo 1 proportions */
+.grid-cards{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:15px!important}
+.track-card{
+  min-width:0!important;padding:9px!important;border-radius:17px!important;
+  background:linear-gradient(180deg,rgba(15,19,30,.9),rgba(6,9,16,.96))!important;
+  border:1px solid rgba(255,255,255,.11)!important;box-shadow:0 10px 26px rgba(0,0,0,.18)!important;
+}
+.track-card:hover{transform:translateY(-4px)!important;border-color:rgba(74,215,255,.5)!important;box-shadow:0 16px 35px rgba(24,117,255,.13)!important}
+.track-thumb-wrap{border-radius:13px!important;margin-bottom:8px!important;aspect-ratio:1!important;background:#111522!important}
+.track-name{font-size:.78rem!important;font-weight:750!important;color:#f0f2f8!important;line-height:1.25!important}
+.track-artist{font-size:.67rem!important;color:#9ba3b5!important;line-height:1.3!important}
+.track-footer{margin-top:7px!important}
+.thumb-play{background:rgba(0,0,0,.38)!important}
+.thumb-play button,.thumb-play .play-btn{border:1px solid rgba(255,255,255,.34)!important;background:rgba(5,8,15,.58)!important;box-shadow:0 5px 16px rgba(0,0,0,.25)!important}
+
+/* Recently Played should read as a compact strip, like Photo 1 */
+#recentGrid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:12px!important}
+#recentGrid .track-card{display:grid!important;grid-template-columns:56px 1fr!important;grid-template-rows:auto auto!important;column-gap:11px!important;align-items:center!important;padding:7px!important;min-height:64px!important}
+#recentGrid .track-thumb-wrap{grid-row:1 / span 2;width:56px!important;height:50px!important;margin:0!important;border-radius:10px!important;aspect-ratio:auto!important}
+#recentGrid .track-name{align-self:end!important}
+#recentGrid .track-artist{align-self:start!important}
+#recentGrid .track-footer{display:none!important}
+
+/* Bottom player — Photo 1 floating glass bar */
+.player-bar{
+  left:10px!important;right:10px!important;bottom:10px!important;height:138px!important;padding:0 18px!important;
+  border-radius:25px!important;background:rgba(7,10,17,.91)!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  backdrop-filter:blur(28px) saturate(1.12)!important;
+  gap:18px!important;
+}
+.player-left{width:29%!important;min-width:280px!important;gap:14px!important}
+.player-art{width:88px!important;height:88px!important;border-radius:13px!important;box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 22px rgba(66,99,255,.16)!important}
+.player-meta .t{font-size:.91rem!important;font-weight:800!important;color:#f5f6fb!important}
+.player-meta .a{font-size:.68rem!important;color:#aeb5c4!important;margin-top:4px!important}
+.player-center{max-width:590px!important;gap:10px!important}
+.controls{gap:19px!important}
+.icon-btn{font-size:1.12rem!important;opacity:.92!important}
+.play-circle{
+  width:58px!important;height:58px!important;border-radius:50%!important;
+  background:linear-gradient(145deg,#8d7dff,#2f5fff)!important;color:#fff!important;
+  border:1px solid rgba(130,225,255,.72)!important;
+  box-shadow:0 0 0 4px rgba(64,92,255,.08),0 0 30px rgba(66,89,255,.55),inset 0 1px 0 rgba(255,255,255,.32)!important;
+  font-size:1.18rem!important;
+}
+.play-circle:hover{transform:scale(1.05)!important}
+.progress-bar-container{font-size:.67rem!important;gap:10px!important}
+.bar{height:4px!important;background:rgba(255,255,255,.13)!important}
+.fill{background:linear-gradient(90deg,#7b42ff,#27dfff)!important;box-shadow:0 0 10px rgba(91,92,255,.65)!important}
+.player-right{width:24%!important;min-width:180px!important;gap:14px!important}
+.player-right input[type=range]{width:150px!important}
+
+/* Keep utility/theme panels premium */
+.theme-btn,.bo-theme-mini,.theme-customize-launch,.bo-feature-btn{border-radius:12px!important}
+
+/* Avoid accidental horizontal overflow */
+.main-viewport,.view-panel{min-width:0!important}
+
+/* Desktop sizing */
+@media (max-width:1350px) and (min-width:1001px){
+  .sidebar{width:260px!important;flex-basis:260px!important}
+  .grid-cards{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  #recentGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .spotlight-banner#homeNowPlayingSpotlight{height:310px!important;min-height:310px!important}
+  .spotlight-title{max-width:58%!important;font-size:1.8rem!important}
+}
+@media (max-width:1000px) and (min-width:701px){
+  .sidebar{width:226px!important;flex-basis:226px!important;padding-left:10px!important;padding-right:10px!important}
+  .main-viewport{padding:18px 16px 145px!important}
+  .header-bar{flex-wrap:wrap!important}
+  .search-bar{flex-basis:100%!important}
+  .tabs-row{width:100%!important;justify-content:flex-start!important;overflow-x:auto!important}
+  .grid-cards{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #recentGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .spotlight-banner#homeNowPlayingSpotlight{height:285px!important;min-height:285px!important;padding:28px!important}
+  .spotlight-banner#homeNowPlayingSpotlight .spotlight-art-layer{width:64%!important}
+  .spotlight-title{font-size:1.55rem!important;max-width:55%!important}
+  .spotlight-sub{max-width:52%!important}
+  .player-left{min-width:220px!important;width:28%!important}
+  .player-art{width:68px!important;height:68px!important}
+  .player-right{min-width:145px!important}
+}
+
+/* Mobile: preserve existing mobile feature behavior, only polish visuals */
+@media (max-width:700px){
+  .sidebar{display:none!important}
+  .main-viewport{padding:12px 10px 175px!important}
+  .header-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .search-bar{width:100%!important;flex:none!important}
+  .tabs-row{width:100%!important;justify-content:flex-start!important;overflow-x:auto!important}
+  .tag{height:42px!important;padding:0 15px!important}
+  .spotlight-banner#homeNowPlayingSpotlight{height:225px!important;min-height:225px!important;padding:22px 18px!important;border-radius:21px!important}
+  .spotlight-banner#homeNowPlayingSpotlight .spotlight-art-layer{width:62%!important}
+  .spotlight-title{font-size:1.28rem!important;max-width:57%!important}
+  .spotlight-sub{font-size:.67rem!important;max-width:56%!important;margin-bottom:13px!important}
+  .spotlight-tag{font-size:.55rem!important;padding:6px 9px!important}
+  .btn-action{padding:9px 12px!important;font-size:.65rem!important}
+  .grid-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  #recentGrid{grid-template-columns:1fr!important}
+  #recentGrid .track-card{grid-template-columns:52px 1fr!important}
+  #recentGrid .track-thumb-wrap{width:52px!important;height:48px!important}
+  .player-bar{left:8px!important;right:8px!important;bottom:68px!important;height:62px!important;border-radius:17px!important;padding:0 10px!important}
+  .player-art{width:44px!important;height:44px!important;border-radius:9px!important}
+  .player-left{min-width:0!important;width:auto!important;flex:1!important}
+  .player-center,.player-right{display:none!important}
+  .player-meta .t{font-size:.66rem!important}
+  .player-meta .a{font-size:.54rem!important}
+  .mobile-controls-mini{display:flex!important}
+}
+</style>
+
+
+
 </head>
 <body data-theme="dark">
 
@@ -1700,7 +1967,7 @@ body{overflow:hidden!important}
   <!-- SIDEBAR (DESKTOP) -->
   <aside class="sidebar">
     <div>
-      <div class="brand"><span class="mark">⚡</span> <div>BOOSTER OS<br><small>3.0V HYBRID</small></div></div>
+      <div class="brand"><span class="mark">⚡</span> <div>BOOSTER OS<br><small>3.0V ULTRA</small></div></div>
       <div class="tagline-mini">BOOSTER MUSIC ENGINE</div>
       <nav class="nav-menu">
         <button class="nav-item active" data-view="home">🏠 Home</button>
@@ -1747,12 +2014,7 @@ body{overflow:hidden!important}
           </label>
         </div>
         <div class="custom-color-note">Choose your own warm gold / almond tone — it updates the full UI, player & lyrics.</div>
-        <button type="button" class="custom-reset" id="customColorReset">↺ Reset Almond Gold</button>
-        <div class="bo-almond-row">
-          <div><b>🍂 &nbsp; DARK ALMOND</b><span>Warm Premium Theme</span></div>
-          <button type="button" class="bo-toggle" aria-label="Dark Almond">ON<span></span></button>
-        </div>
-        <button type="button" class="bo-feature-btn" onclick="toast('BOOSTER Feature Center')">🚀 <span>BOOSTER FEATURE CENTER</span><b>→</b></button>
+        <button type="button" class="custom-reset" id="customColorReset">↺ Reset Almond Gold</button><button type="button" class="bo-feature-btn" onclick="toast('BOOSTER Feature Center')">🚀 <span>BOOSTER FEATURE CENTER</span><b>→</b></button>
       </div>
     </div>
   </aside>
@@ -1778,7 +2040,7 @@ body{overflow:hidden!important}
           <div class="spotlight-art-fade"></div>
           <img id="spotlightArt" alt="Current song artwork">
         </div>
-        <span class="spotlight-tag">BOOSTER HYBRID SPOTLIGHT</span>
+        <span class="spotlight-tag">BOOSTER NOW PLAYING</span>
         <h2 class="spotlight-title" id="spotlightTitle">Smart Recommendation Ready</h2>
         <p class="spotlight-sub" id="spotlightSub">AutoPlay & BOOSTER Crossfade actively integrated</p>
         <button class="btn-action" id="resumeBtn" onclick="resumePlay()">▶ Resume Listening</button>
@@ -1887,7 +2149,6 @@ body{overflow:hidden!important}
           <div class="toggle-row">Gapless Engine <label class="switch"><input type="checkbox" id="gaplessToggle" checked><span class="slider-pill"></span></label></div>
           <div class="toggle-row">🎤 Karaoke Mic <label class="switch"><input type="checkbox" id="micToggle"><span class="slider-pill"></span></label></div>
           <div class="toggle-row">🎙️ Vocal Cut (Karaoke) <label class="switch"><input type="checkbox" id="vocalCutToggle"><span class="slider-pill"></span></label></div>
-          <div class="toggle-row">🎧 L/R Split Mode <label class="switch"><input type="checkbox" id="splitModeToggle"><span class="slider-pill"></span></label></div>
           <div style="font-size:.62rem;color:var(--text-dim);line-height:1.4;margin-top:5px">L/R Split is a stereo-channel effect, not AI vocal separation.</div>
           <div class="range-control"><label>Mic Monitor <span id="micGainVal">35%</span></label><input type="range" id="micGainSlider" min="0" max="100" value="35"></div><div class="mic-level-wrap">MIC LEVEL <div class="mic-level"><i id="micLevelFill"></i></div></div>
         </div>
@@ -1984,7 +2245,7 @@ body{overflow:hidden!important}
       </div>
       <div class="np-secondary">
         <button id="npFavBtn" onclick="toggleFavoriteCurrent()">♡ Favorite</button>
-        <button onclick="switchView('queue');closeNowPlaying()">☰ Queue</button>
+        <button onclick="closeNowPlaying();switchView('queue')">☰ Queue</button>
         <button onclick="addCurrentToPlaylistPrompt()">＋ Playlist</button>
         <button onclick="openSleepTimerModal()">⏲️ Sleep Timer</button>
         <button class="mobile-dsp-btn" onclick="openProDSP()">🎛️ Pro DSP</button>
@@ -2128,7 +2389,7 @@ const state = {
   lastPosition: safeJSON('bo_lastpos', null),
   quality: localStorage.getItem('bo_quality') || '320kbps', crossfade: Number(localStorage.getItem('bo_crossfade') || 4), autoPlay: localStorage.getItem('bo_autoplay') !== '0', gapless: localStorage.getItem('bo_gapless') !== '0', tvMode: false, eightD: localStorage.getItem('bo_8d') === '1', eightDSpeed: Number(localStorage.getItem('bo_8d_speed') || 0.10), micEnabled: false, micMonitor: 0.35, vocalCut: localStorage.getItem('bo_vocal_cut') === '1',
   eqGains: safeJSON('bo_eq', [0,0,0,0,0,0,0,0,0,0]),
-  activePreset: 'Normal', sleepTimerDeadline: null, isFetchingAutoPlay: false, karaokeWordGlow: true, smartMixBusy: false, autoplayTarget: 8, splitMode: false
+  activePreset: 'Normal', sleepTimerDeadline: null, isFetchingAutoPlay: false, karaokeWordGlow: true, smartMixBusy: false, autoplayTarget: 8
 };
 state.karaokeWordGlow = localStorage.getItem('bo_karaoke') !== '0';
 state.micMonitor = Number(localStorage.getItem('bo_mic_monitor') ?? '0.35');
@@ -3292,10 +3553,18 @@ function toggleKaraokeMode(){
   if(currentLyrics) updateActiveLyric(activeAudio.currentTime||0,true);
   localStorage.setItem('bo_karaoke',state.karaokeWordGlow?'1':'0');
 }
-function toggleFullscreenPlayer(){
-  const el=document.getElementById('npOverlay');
-  if(!document.fullscreenElement){el?.requestFullscreen?.().catch(()=>{});}
-  else document.exitFullscreen?.().catch(()=>{});
+async function toggleFullscreenPlayer(){
+  try{
+    /* Use the document as the fullscreen root, not #npOverlay.
+       This is important: dialogs, tabs, queue, DSP, artist/album panels and
+       other app overlays live outside #npOverlay and must remain renderable/clickable. */
+    if(!document.fullscreenElement){
+      const root=document.documentElement;
+      if(root?.requestFullscreen) await root.requestFullscreen({navigationUI:'hide'}).catch(()=>root.requestFullscreen().catch(()=>{}));
+    }else{
+      await document.exitFullscreen?.().catch(()=>{});
+    }
+  }catch(e){ console.warn('Fullscreen toggle failed',e); }
 }
 async function startSmartMix(){
   if(state.smartMixBusy)return;
@@ -3838,15 +4107,6 @@ document.getElementById('micGainSlider').addEventListener('input',e=>{state.micM
 
 const _vc=document.getElementById('vocalCutToggle'); if(_vc) _vc.checked=!!state.vocalCut;
 _vc?.addEventListener('change',e=>{state.vocalCut=e.target.checked;localStorage.setItem('bo_vocal_cut',state.vocalCut?'1':'0');applyVocalCut();toast(state.vocalCut?'🎙️ Vocal Cut ON — Karaoke mode':'🎙️ Vocal Cut OFF');});
-
-document.getElementById('splitModeToggle')?.addEventListener('change',e=>{
-  state.splitMode=e.target.checked;
-  // Reuse the existing karaoke side-signal path: ON sends L-R side content.
-  state.vocalCut=e.target.checked;
-  const vc=document.getElementById('vocalCutToggle'); if(vc) vc.checked=state.vocalCut;
-  applyVocalCut();
-  toast(state.splitMode?'🎧 L/R Split ON — side/music emphasis':'🎧 L/R Split OFF');
-});
 
 document.getElementById('subBassSlider').addEventListener('input', e=>{
   document.getElementById('subBassVal').textContent = e.target.value+'%';
@@ -5602,6 +5862,1148 @@ input[type="range"]::-webkit-slider-runnable-track{accent-color:var(--ui-accent)
 </script>
 <!-- /FINAL CLEAN HOME NOW PLAYING ARTWORK -->
 
+
+<!-- BOOSTER OS PREMIUM FEATURE HUB — additive only; existing engine/UI preserved -->
+<style id="bo-premium-feature-hub-css">
+  #boPremiumHub{position:fixed;inset:0;z-index:30000;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.48);backdrop-filter:blur(12px);padding:18px;}
+  #boPremiumHub.open{display:flex}
+  .bo-premium-card{width:min(560px,96vw);max-height:min(78dvh,680px);overflow:auto;border:1px solid var(--border);border-radius:28px;background:color-mix(in srgb,var(--panel) 92%,transparent);box-shadow:0 28px 90px rgba(0,0,0,.55),0 0 45px var(--glow);padding:18px;}
+  .bo-premium-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .bo-premium-title{font-size:1rem;font-weight:900}.bo-premium-sub{font-size:.68rem;color:var(--text-dim);margin-top:3px}
+  .bo-premium-close{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+  .bo-premium-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .bo-premium-action{min-height:96px;text-align:left;border:1px solid var(--border);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.025));color:var(--text);padding:14px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+  .bo-premium-action:hover{border-color:var(--accent);box-shadow:0 10px 30px var(--glow);transform:translateY(-2px)}
+  .bo-premium-action b{font-size:.82rem}.bo-premium-action span{font-size:.65rem;color:var(--text-dim);line-height:1.4}
+  .bo-premium-dna{margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.035);font-size:.7rem;color:var(--text-dim);line-height:1.6}
+  .bo-premium-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px;color:var(--text)}
+  @media(max-width:600px){#boPremiumHub{padding:8px;align-items:flex-end}.bo-premium-card{border-radius:26px 26px 18px 18px;padding:14px;max-height:82dvh}.bo-premium-grid{gap:8px}.bo-premium-action{min-height:90px;padding:12px}}
+</style>
+<div id="boPremiumHub" aria-hidden="true">
+  <div class="bo-premium-card" role="dialog" aria-modal="true" aria-label="BOOSTER Premium Feature Center">
+    <div class="bo-premium-head"><div><div class="bo-premium-title">🚀 BOOSTER Premium Lab</div><div class="bo-premium-sub">New features only — your existing player stays untouched.</div></div><button class="bo-premium-close" id="boPremiumClose" aria-label="Close">✕</button></div>
+    <div class="bo-premium-grid">
+      <button class="bo-premium-action" data-premium="enhance"><b>✨ One‑Tap Enhance</b><span>Optimizes autoplay, gapless playback and crossfade for a smoother session.</span></button>
+      <button class="bo-premium-action" data-premium="vibe"><b>🌊 Vibe Continuity</b><span>Builds the next songs around the current song's mood and energy.</span></button>
+      <button class="bo-premium-action" data-premium="rediscover"><b>🧠 Rediscover Me</b><span>Finds a familiar song you have not played much recently.</span></button>
+      <button class="bo-premium-action" data-premium="dna"><b>📊 My Listening DNA</b><span>Shows the moods your recent listening naturally leans toward.</span></button>
+      <button class="bo-premium-action" data-premium="dna"><b>🧬 Song DNA</b><span>Energy, mood, tempo and vibe profile for the current song.</span></button>
+      <button class="bo-premium-action" data-premium="cinema"><b>🎬 Cinematic Mode</b><span>Minimal controls with artwork-focused presentation.</span></button>
+      <button class="bo-premium-action" data-premium="radar"><b>🌈 Vibe Radar</b><span>See the current song's energy direction.</span></button>
+      <button class="bo-premium-action" data-premium="transition"><b>🌀 Smart Transition</b><span>Use the existing transition controls when available.</span></button>
+      <button class="bo-premium-action" data-premium="universe"><b>🌌 Song Universe</b><span>Explore nearby moods and related songs from the queue.</span></button>
+      <button class="bo-premium-action" data-premium="surprise"><b>🪄 Surprise Me</b><span>Jump to a compatible queued song.</span></button>
+
+    </div>
+    <div class="bo-premium-dna" id="boPremiumDna">Your Listening DNA will appear here.</div><div id="boPremiumResult" class="bo-premium-dna">Pick a premium feature above.</div>
+  </div>
+</div>
+<script id="bo-premium-feature-hub-js">
+(()=>{
+  'use strict';
+  const hub=()=>document.getElementById('boPremiumHub');
+  const close=()=>{const h=hub();if(h){h.classList.remove('open');h.setAttribute('aria-hidden','true')}};
+  const open=()=>{const h=hub();if(h){h.classList.add('open');h.setAttribute('aria-hidden','false');renderDNA()}};
+  const safeToast=m=>{try{if(typeof toast==='function')toast(m)}catch(e){}};
+  const save=()=>{try{if(typeof saveLS==='function')saveLS()}catch(e){}};
+  function current(){try{return typeof currentTrack==='function'?currentTrack():window.state?.current||null}catch(e){return null}}
+  function key(t){try{return typeof trackKey==='function'?trackKey(t):String(t?.id||t?.title||'')}catch(e){return ''}}
+  function vibeName(t){try{return typeof vibeProfile==='function'?vibeProfile(t).name:'Balanced'}catch(e){return 'Balanced'}}
+  function renderDNA(){
+    const box=document.getElementById('boPremiumDna'); if(!box)return;
+    const rows=Array.isArray(window.state?.recentlyPlayed)?window.state.recentlyPlayed.slice(0,30):[];
+    if(!rows.length){box.textContent='Play a few songs and your private Listening DNA will build automatically on this device.';return;}
+    const counts={}; rows.forEach(t=>{const v=vibeName(t);counts[v]=(counts[v]||0)+1});
+    const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const total=rows.length;
+    box.innerHTML='<b style="color:var(--text)">Your recent vibe</b><br>'+top.map(([n,c])=>`<span class="bo-premium-pill">${n} · ${Math.round(c/total*100)}%</span>`).join('');
+  }
+  async function enhance(){
+    try{
+      if(window.state){state.autoPlay=true;state.gapless=true;state.crossfade=Math.max(3,Math.min(5,Number(state.crossfade)||4));state.smartMixBusy=false;}
+      save();
+      if(typeof ensureAutoplayQueue==='function')await ensureAutoplayQueue(8);
+      safeToast('✨ Enhanced — smoother queue + transitions enabled');
+    }catch(e){safeToast('Enhance could not finish');}
+  }
+  async function vibe(){
+    try{
+      localStorage.setItem('bo_vibe_flow','1');
+      if(window.state)state.autoPlay=true;
+      save();
+      if(typeof ensureAutoplayQueue==='function')await ensureAutoplayQueue(10);
+      try{window.__boVibeFlow=true}catch(e){}
+      safeToast('🌊 Vibe Continuity ON — keeping the musical journey');
+    }catch(e){safeToast('Vibe Continuity could not start');}
+  }
+  async function rediscover(){
+    const rows=Array.isArray(window.state?.recentlyPlayed)?window.state.recentlyPlayed.slice():[];
+    if(!rows.length){safeToast('🧠 Play a few songs first — then Rediscover Me will work');return}
+    const cur=key(current());
+    const candidates=rows.filter(t=>key(t)!==cur && t?.streamUrl).sort((a,b)=>{
+      const ca=Number(window.state?.playCounts?.[key(a)]||0), cb=Number(window.state?.playCounts?.[key(b)]||0);
+      return ca-cb;
+    });
+    const pick=candidates[0]||rows.find(t=>key(t)!==cur);
+    if(pick && typeof playTrack==='function'){safeToast('🧠 Rediscovering an old favorite…');await playTrack(pick)}else safeToast('No rediscoverable song yet');
+  }
+  document.addEventListener('click',async e=>{
+    const feature=e.target.closest?.('.bo-feature-btn');
+    if(feature){e.preventDefault();e.stopPropagation();open();return}
+    if(e.target.closest?.('#boPremiumClose')||e.target===hub()){close();return}
+    const action=e.target.closest?.('[data-premium]'); if(!action)return;
+    const a=action.dataset.premium;
+    if(a==='enhance')await enhance();
+    if(a==='vibe')await vibe();
+    if(a==='rediscover')await rediscover();
+    if(a==='dna')renderDNA();
+  },true);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&hub()?.classList.contains('open'))close();});
+  window.BoosterPremium={open,close,enhance,vibe,rediscover,renderDNA};
+})();
+</script>
+
+<script id="premium-experience-pack-js">(()=>{
+'use strict';const $=s=>document.querySelector(s), hub=$('#boPremiumHub'), result=$('#boPremiumResult');
+const getSong=()=>{try{return typeof currentTrack==='function'?currentTrack():window.state?.current||null}catch(e){return null}};
+const title=s=>s?.title||s?.name||'Current Song', artist=s=>s?.artist||s?.artists||'Unknown Artist';
+function dna(s){let t=(title(s)+' '+artist(s)).toLowerCase();let energy=Math.round(45+((t.length*17)%50));let moods=['Chill','Hype','Dreamy','Focus','Retro','Night'];let mood=moods[(t.length+(s?.id?String(s.id).length:0))%moods.length];let tempo=80+((t.length*7)%80);return `<b>${title(s)}</b><div class="boPDNA"><span class="boPChip">${mood}</span><span class="boPChip">Energy ${energy}%</span><span class="boPChip">~${tempo} BPM</span><span class="boPChip">${artist(s)}</span></div><div class="boPRadar"><i style="left:${energy}%"></i></div>`}
+function related(){let q=window.state?.queue;if(!Array.isArray(q)||!q.length)return 'Your current queue is empty. Add a few songs and Song Universe will use them as the nearby musical space.';let s=getSong(), rows=q.filter(x=>x!==s).slice(0,5).map(x=>`<span class="boPChip">${String(title(x)).replace(/[<>&]/g,'')}</span>`).join('');return `<b>Nearby in your queue</b><div class="boPDNA">${rows}</div>`}
+function surprise(){let q=window.state?.queue;if(!Array.isArray(q)||!q.length)return 'No queue available for Surprise Me.';let i=Math.floor(Math.random()*q.length);let s=q[i];try{if(typeof playTrack==='function')playTrack(s);else if(typeof playSong==='function')playSong(s)}catch(e){}return `<b>✨ Surprise pick</b><br>${title(s)} — ${artist(s)}`}
+document.addEventListener('click',e=>{let b=e.target.closest?.('[data-premium]');if(b){let type=b.dataset.premium,s=getSong();if(type==='cinema'){document.body.classList.toggle('bo-premium-cinema');result.innerHTML='🎬 Cinematic Mode toggled. Your existing player remains untouched.'}else if(type==='dna')result.innerHTML=dna(s);else if(type==='radar')result.innerHTML=`<b>🌈 Vibe Radar</b><br>Current energy is mapped from the song context.<div class="boPRadar"><i></i></div><span>Low energy ← vibe → High energy</span>`;else if(type==='transition'){try{if(typeof toggleCrossfade==='function')toggleCrossfade();else if(typeof openCrossfade==='function')openCrossfade();}catch(e){}result.innerHTML='🌀 Smart Transition opened through the existing audio controls.'}else if(type==='universe')result.innerHTML=related();else if(type==='surprise')result.innerHTML=surprise()}});
+window.BoosterPremium=Object.assign(window.BoosterPremium||{}, {open(){hub?.classList.add('open');hub?.setAttribute('aria-hidden','false')}});
+})();</script>
+<style id="premium-cinema-css">body.bo-premium-cinema .topbar,body.bo-premium-cinema .mobile-nav{opacity:.65}body.bo-premium-cinema .player-bar,body.bo-premium-cinema .bottom-player{box-shadow:0 0 50px var(--glow)!important}body.bo-premium-cinema .spotlight-banner,body.bo-premium-cinema #homeNowPlayingSpotlight{box-shadow:0 0 80px var(--glow)!important}</style>
+
+<style id="bo-artist-album-studio-css">
+.bo-aa-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.58);backdrop-filter:blur(12px)}
+.bo-aa-modal.open{display:flex}.bo-aa-card{width:min(760px,96vw);max-height:88vh;overflow:auto;border:1px solid rgba(255,255,255,.12);border-radius:26px;background:linear-gradient(145deg,rgba(28,28,32,.98),rgba(12,12,15,.98));box-shadow:0 28px 90px rgba(0,0,0,.55);padding:20px;color:#fff}.bo-aa-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.bo-aa-head h2{margin:0;font-size:21px}.bo-aa-close{border:0;background:rgba(255,255,255,.08);color:#fff;border-radius:12px;width:38px;height:38px;font-size:18px;cursor:pointer}.bo-aa-tabs{display:flex;gap:8px;margin:16px 0}.bo-aa-tab{flex:1;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;border-radius:13px;padding:11px;cursor:pointer}.bo-aa-tab.active{background:rgba(255,255,255,.15)}.bo-aa-panel{display:none}.bo-aa-panel.active{display:block}.bo-aa-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;border-radius:13px;padding:12px 13px;outline:0}.bo-aa-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.bo-aa-btn{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.08);color:#fff;border-radius:13px;padding:11px;cursor:pointer}.bo-aa-btn:hover{background:rgba(255,255,255,.14)}.bo-aa-results{margin-top:14px;display:grid;gap:8px}.bo-aa-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:15px;background:rgba(255,255,255,.045)}.bo-aa-row img{width:46px;height:46px;border-radius:10px;object-fit:cover;background:#222}.bo-aa-meta{min-width:0;flex:1}.bo-aa-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bo-aa-sub{font-size:12px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bo-aa-row button{border:0;background:rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:9px;cursor:pointer}.bo-aa-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.bo-aa-chip{display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);border-radius:999px;padding:8px 10px;font-size:12px}.bo-aa-chip button{border:0;background:none;color:#fff;cursor:pointer}.bo-aa-note{font-size:12px;opacity:.58;margin-top:10px}.bo-aa-fab{display:none}
+.bo-aa-launch{width:100%;margin-top:10px;border:1px solid var(--border,#333);background:rgba(255,255,255,.05);color:inherit;border-radius:12px;padding:12px;cursor:pointer;text-align:left;font-weight:700}
+@media(max-width:600px){.bo-aa-modal{padding:8px;align-items:flex-end}.bo-aa-card{width:100%;max-height:88vh;border-radius:24px 24px 0 0;padding:16px}.bo-aa-actions{grid-template-columns:1fr 1fr}.bo-aa-row button{padding:8px}.bo-aa-head h2{font-size:18px}}
+</style><script id="bo-artist-album-studio-js">(()=>{
+'use strict';
+const $=s=>document.querySelector(s); const toastAA=m=>{try{typeof toast==='function'?toast(m):console.log(m)}catch(e){console.log(m)}};
+const key=s=>String(s||'').trim().toLowerCase(); const clean=s=>String(s||'').replace(/[<>&"']/g,'');
+const getArr=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}; const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const favArtists=getArr('bo_favorite_artists_v1'), favAlbums=getArr('bo_favorite_albums_v1');
+function normArtist(t){return String(t?.artist||t?.artists||'').split(',')[0].trim()}
+function normAlbum(t){return String(t?.album||t?.albumName||'').trim()}
+function addFav(type,value){value=String(value||'').trim();if(!value)return;const arr=type==='artist'?favArtists:favAlbums;if(!arr.some(x=>key(x)===key(value)))arr.push(value);put(type==='artist'?'bo_favorite_artists_v1':'bo_favorite_albums_v1',arr);renderFavs();toastAA('❤️ Added to favorites')}
+function removeFav(type,value){const arr=type==='artist'?favArtists:favAlbums;const i=arr.findIndex(x=>key(x)===key(value));if(i>=0)arr.splice(i,1);put(type==='artist'?'bo_favorite_artists_v1':'bo_favorite_albums_v1',arr);renderFavs()}
+async function search(q){if(typeof apiSearchSongs!=='function')return[];try{return await apiSearchSongs(String(q).trim(),24)}catch(e){console.warn(e);return[]}}
+function unique(rows){const seen=new Set();return (rows||[]).filter(t=>{const k=String(t?.id||t?.streamUrl||t?.title||'');if(!k||seen.has(k))return false;seen.add(k);return true})}
+async function playCollection(q,label){const rows=unique(await search(q));if(!rows.length){toastAA('No songs found for '+label);return} if(!Array.isArray(state.queue))state.queue=[]; const existing=new Set(state.queue.map(t=>String(t?.id||t?.streamUrl||t?.title))); const add=rows.filter(t=>!existing.has(String(t?.id||t?.streamUrl||t?.title))); state.queue.push(...add); state.currentIndex=Math.max(0,state.queue.length-add.length-1); if(typeof renderQueueViews==='function')renderQueueViews(); if(typeof playTrack==='function')await playTrack(add[0]||rows[0]); toastAA('▶ '+label+' started • '+rows.length+' songs');}
+function renderFavs(){const a=$('#boAAArtists');const b=$('#boAAAlbums');if(a)a.innerHTML=favArtists.length?favArtists.map(x=>`<span class="bo-aa-chip">🎤 ${clean(x)} <button data-aa-rm-a="${clean(x)}">×</button></span>`).join(''):'<span class="bo-aa-note">No favorite singers yet.</span>';if(b)b.innerHTML=favAlbums.length?favAlbums.map(x=>`<span class="bo-aa-chip">💿 ${clean(x)} <button data-aa-rm-b="${clean(x)}">×</button></span>`).join(''):'<span class="bo-aa-note">No favorite albums yet.</span>'}
+const modal=document.createElement('div');modal.className='bo-aa-modal';modal.id='boAAModal';modal.innerHTML=`<div class="bo-aa-card"><div class="bo-aa-head"><h2>🎵 Artist & Album Studio</h2><button class="bo-aa-close" id="boAAClose">✕</button></div><div class="bo-aa-tabs"><button class="bo-aa-tab active" data-aa-tab="artist">🎤 Artists</button><button class="bo-aa-tab" data-aa-tab="album">💿 Albums</button><button class="bo-aa-tab" data-aa-tab="fav">❤️ Favorites</button></div><section class="bo-aa-panel active" id="boAAPArtist"><input class="bo-aa-input" id="boAAArtistInput" placeholder="Search singer / artist…"><div class="bo-aa-actions"><button class="bo-aa-btn" id="boPlayArtist">▶ Play Artist</button><button class="bo-aa-btn" id="boShuffleArtist">🔀 Shuffle Artist</button><button class="bo-aa-btn" id="boFavArtist">❤️ Favorite Artist</button></div><div class="bo-aa-results" id="boAAArtistResults"></div></section><section class="bo-aa-panel" id="boAAPAlbum"><input class="bo-aa-input" id="boAAAlbumInput" placeholder="Search album…"><div class="bo-aa-actions"><button class="bo-aa-btn" id="boPlayAlbum">▶ Play Album</button><button class="bo-aa-btn" id="boShuffleAlbum">🔀 Shuffle Album</button><button class="bo-aa-btn" id="boFavAlbum">❤️ Favorite Album</button></div><div class="bo-aa-results" id="boAAAlbumResults"></div></section><section class="bo-aa-panel" id="boAAPFav"><h3>Favorite Singers</h3><div class="bo-aa-chips" id="boAAArtists"></div><h3>Favorite Albums</h3><div class="bo-aa-chips" id="boAAAlbums"></div><div class="bo-aa-note">Favorites are saved on this device and can be used as Smart Music seeds.</div></section></div>`;document.body.appendChild(modal);
+const fab=document.createElement('button');fab.className='bo-aa-fab';fab.textContent='🎤 Artists • 💿 Albums';fab.title='Artist & Album Studio';document.body.appendChild(fab);
+function open(){modal.classList.add('open');renderFavs()} fab.onclick=open;
+const launch=document.createElement('button');launch.type='button';launch.className='bo-aa-launch';launch.textContent='🎤 Artists & Albums  •  Play, Shuffle & Favorites';launch.title='Open Artist & Album Studio';launch.onclick=open;
+const smartGrid=document.getElementById('bfSmartGrid'); if(smartGrid) smartGrid.parentElement.appendChild(launch);$('#boAAClose').onclick=()=>modal.classList.remove('open');modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+modal.addEventListener('click',e=>{const tab=e.target.closest('[data-aa-tab]');if(tab){modal.querySelectorAll('.bo-aa-tab').forEach(x=>x.classList.remove('active'));modal.querySelectorAll('.bo-aa-panel').forEach(x=>x.classList.remove('active'));tab.classList.add('active');$('#boAAP'+tab.dataset.aaTab[0].toUpperCase()+tab.dataset.aaTab.slice(1)).classList.add('active');return} const ra=e.target.closest('[data-aa-rm-a]');if(ra)removeFav('artist',ra.dataset.aaRmA);const rb=e.target.closest('[data-aa-rm-b]');if(rb)removeFav('album',rb.dataset.aaRmB);const play=e.target.closest('[data-aa-play]');if(play)playTrack?.(JSON.parse(play.dataset.aaPlay));});
+async function renderResults(inputId,outId,type){const q=$(inputId).value.trim();if(!q)return;const out=$(outId);out.innerHTML='<div class="bo-aa-note">Searching…</div>';const rows=unique(await search(q));out.innerHTML=rows.slice(0,12).map(t=>`<div class="bo-aa-row"><img src="${clean(t.image||t.albumArt||'')}" onerror="this.style.visibility='hidden'"><div class="bo-aa-meta"><div class="bo-aa-title">${clean(t.title||'Unknown')}</div><div class="bo-aa-sub">${clean(normArtist(t))}${normAlbum(t)?' • '+clean(normAlbum(t)):''}</div></div><button data-aa-play='${clean(JSON.stringify(t)).replace(/'/g,'&#39;')}'>▶</button></div>`).join('')||'<div class="bo-aa-note">No results.</div>'}
+$('#boPlayArtist').onclick=()=>playCollection($('#boAAArtistInput').value,'Artist');$('#boShuffleArtist').onclick=async()=>{const q=$('#boAAArtistInput').value.trim();const rows=unique(await search(q));if(rows.length){rows.sort(()=>Math.random()-.5);state.queue.push(...rows);state.currentIndex=state.queue.length-rows.length-1;renderQueueViews?.();playTrack?.(rows[0]);toastAA('🔀 Artist shuffled')}};$('#boFavArtist').onclick=()=>addFav('artist',$('#boAAArtistInput').value);
+$('#boPlayAlbum').onclick=()=>playCollection($('#boAAAlbumInput').value,'Album');$('#boShuffleAlbum').onclick=async()=>{const q=$('#boAAAlbumInput').value.trim();const rows=unique(await search(q));if(rows.length){rows.sort(()=>Math.random()-.5);state.queue.push(...rows);state.currentIndex=state.queue.length-rows.length-1;renderQueueViews?.();playTrack?.(rows[0]);toastAA('🔀 Album shuffled')}};$('#boFavAlbum').onclick=()=>addFav('album',$('#boAAAlbumInput').value);
+let at;['boAAArtistInput','boAAAlbumInput'].forEach(id=>$( '#'+id).addEventListener('input',()=>{clearTimeout(at);at=setTimeout(()=>id==='boAAArtistInput'?renderResults('#boAAArtistInput','#boAAArtistResults','artist'):renderResults('#boAAAlbumInput','#boAAAlbumResults','album'),350)}));
+window.boArtistAlbumStudio={open};
+})();</script>
+<!-- TOP-END UI POLISH PACK -->
+<style id="top-end-ui-polish">
+:root{--premium-radius:18px;--premium-blur:22px}
+/* Consistent premium glass language */
+.boPCard,.bo-aa-card,.booster-feature-card,#boV5QueuePanel,#boV5QuickAudio,.bo-theme-card,.bo-shortcut-card,.bo-aa-launch,.bo-aa-btn,.boPResult{
+  border-radius:var(--premium-radius)!important;
+  backdrop-filter:blur(var(--premium-blur)) saturate(1.12);
+}
+.boPCard,.bo-aa-launch,.bo-aa-btn{transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease}
+.boPCard:hover,.bo-aa-launch:hover,.bo-aa-btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+/* Now Playing: cinematic depth without changing layout */
+#npOverlay .np-bg{filter:saturate(1.12) blur(26px);transform:scale(1.08);opacity:.42;transition:opacity .35s ease,filter .35s ease}
+#npOverlay .np-poster-wrap{box-shadow:0 28px 75px rgba(0,0,0,.42),0 0 55px color-mix(in srgb,var(--glow,#c9935b) 42%,transparent)!important}
+#npOverlay .np-secondary button,#npOverlay .np-karaoke-tools button{min-height:38px}
+/* Make the mobile player drawer feel like one sheet */
+@media(max-width:700px){
+  #npOverlay .np-grid{gap:12px!important}
+  #npOverlay .np-secondary{gap:7px!important;padding:2px 2px 4px}
+  #npOverlay .np-secondary button{padding:8px 11px!important;border-radius:13px!important}
+  #npOverlay .np-right{border-radius:22px!important;overflow:hidden}
+  #npOverlay .np-title{font-size:1.12rem!important}
+  #npOverlay .np-artist{font-size:.82rem!important}
+}
+/* New compact drawer quick controls */
+#boDrawerQuick{display:none;gap:7px;flex-wrap:wrap;margin:2px 0 4px}
+#boDrawerQuick button{border:1px solid var(--border,rgba(255,255,255,.12));background:rgba(255,255,255,.055);color:var(--text,#fff);border-radius:13px;padding:8px 10px;font-size:.72rem;cursor:pointer}
+#boDrawerQuick button.active{color:var(--accent,#c9935b);border-color:var(--accent,#c9935b);background:color-mix(in srgb,var(--accent,#c9935b) 12%,transparent)}
+@media(max-width:700px){#boDrawerQuick{display:flex}}
+/* Smart Music Studio hierarchy */
+#boSmartStudioTools{margin-top:10px;padding:12px;border:1px solid var(--border,rgba(255,255,255,.1));border-radius:18px;background:rgba(255,255,255,.035)}
+#boSmartStudioTools .bo-studio-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;font-size:.72rem;font-weight:900;letter-spacing:.04em}
+#boSmartStudioTools .bo-studio-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+#boSmartStudioTools button{border:1px solid var(--border,rgba(255,255,255,.1));background:rgba(255,255,255,.045);color:inherit;border-radius:12px;padding:9px 7px;font-size:.68rem;cursor:pointer}
+#boSmartStudioTools button:hover{border-color:var(--accent)}
+@media(max-width:600px){#boSmartStudioTools .bo-studio-pills{grid-template-columns:1fr 1fr}.bo-aa-launch{margin-top:8px!important}}
+/* Remove leftover karaoke-mic UI; Vocal Cut remains available */
+#micStatusBadge{display:none!important}
+</style>
+<script id="top-end-ui-polish-js">(()=>{
+'use strict';
+const q=s=>document.querySelector(s);
+function call(name,...args){try{if(typeof window[name]==='function')return window[name](...args)}catch(e){}return null}
+/* Compact mobile controls inside the existing song drawer */
+function addDrawerQuick(){
+ const sec=q('#npOverlay .np-secondary'); if(!sec||q('#boDrawerQuick'))return;
+ const box=document.createElement('div'); box.id='boDrawerQuick';
+ box.innerHTML=`<button type="button" id="boVocalCutQuick">🎙️ Vocal Cut <span>OFF</span></button><button type="button" id="bo8DQuick">🌐 8D</button><button type="button" id="boLyricsQuick">♫ Lyrics</button><button type="button" id="boQueueQuick">☰ Queue</button>`;
+ sec.parentNode.insertBefore(box,sec);
+ const vc=q('#boVocalCutQuick'), d8=q('#bo8DQuick');
+ function sync(){const on=!!window.state?.vocalCut;vc?.classList.toggle('active',on);if(vc)vc.innerHTML=`🎙️ Vocal Cut <span>${on?'ON':'OFF'}</span>`;d8?.classList.toggle('active',!!window.state?.eightD)}
+ vc?.addEventListener('click',()=>{const el=q('#vocalCutToggle'); if(el){el.checked=!el.checked;el.dispatchEvent(new Event('change',{bubbles:true}))}else if(typeof toggleVocalCut==='function')call('toggleVocalCut');sync()});
+ d8?.addEventListener('click',()=>{call('toggle8D');setTimeout(sync,40)});
+ q('#boLyricsQuick')?.addEventListener('click',()=>call('openMobileLyrics'));
+ q('#boQueueQuick')?.addEventListener('click',()=>{call('switchView','queue');call('closeNowPlaying')});
+ setInterval(sync,700);sync();
+}
+/* Add a clean studio shortcut under Smart Music, not floating above it. */
+function addSmartStudio(){
+ const grid=q('#bfSmartGrid'); if(!grid||q('#boSmartStudioTools'))return;
+ const wrap=document.createElement('div');wrap.id='boSmartStudioTools';
+ wrap.innerHTML=`<div class="bo-studio-title"><span>🎚️ Smart Music Studio</span><span style="opacity:.55;font-weight:600">Personalize</span></div><div class="bo-studio-pills"><button id="boStudioFav">❤️ Favorites</button><button id="boStudioArtist">🎤 Artists</button><button id="boStudioAlbum">💿 Albums</button><button id="boStudioPlayArtist">▶ Play Artist</button><button id="boStudioPlayAlbum">▶ Play Album</button><button id="boStudioCustomize">⚙ Customize</button></div>`;
+ grid.parentNode.insertBefore(wrap,grid.nextSibling);
+ q('#boStudioFav')?.addEventListener('click',()=>{window.boArtistAlbumStudio?.open?.();document.querySelector('[data-aa-tab="fav"]')?.click()});
+ q('#boStudioArtist')?.addEventListener('click',()=>{window.boArtistAlbumStudio?.open?.();document.querySelector('[data-aa-tab="artist"]')?.click()});
+ q('#boStudioAlbum')?.addEventListener('click',()=>{window.boArtistAlbumStudio?.open?.();document.querySelector('[data-aa-tab="album"]')?.click()});
+ q('#boStudioPlayArtist')?.addEventListener('click',()=>{window.boArtistAlbumStudio?.open?.();document.querySelector('[data-aa-tab="artist"]')?.click();q('#boAAArtistInput')?.focus()});
+ q('#boStudioPlayAlbum')?.addEventListener('click',()=>{window.boArtistAlbumStudio?.open?.();document.querySelector('[data-aa-tab="album"]')?.click();q('#boAAAlbumInput')?.focus()});
+ q('#boStudioCustomize')?.addEventListener('click',()=>{const b=[...document.querySelectorAll('.bf-btn')].find(x=>/customize smart|smart.*custom/i.test(x.textContent));b?.click()});
+}
+function boot(){addDrawerQuick();addSmartStudio();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,500),{once:true});else setTimeout(boot,500);
+setTimeout(boot,1600);
+})();</script>
+
+
+<style id="bo-now-playing-theme-sync">
+/* NOW PLAYING THEME SYNC — keeps the fullscreen player visually identical to the active site theme. */
+#npOverlay{
+  --np-accent:var(--accent);
+  --np-bg:var(--bg-main);
+  --np-surface:var(--panel);
+  --np-card:var(--card);
+  --np-border:var(--border);
+  --np-text:var(--text);
+  --np-muted:var(--text-dim);
+  --np-soft:rgba(255,255,255,.055);
+  --np-strong:rgba(255,255,255,.10);
+  --np-shadow:rgba(0,0,0,.42);
+  background:var(--np-bg)!important;
+  color:var(--np-text)!important;
+  isolation:isolate;
+  transition:background .45s ease,color .35s ease;
+}
+#npOverlay .np-bg{background-color:var(--np-bg)!important;opacity:.24!important;}
+#npOverlay .np-bg::after{
+  background:radial-gradient(ellipse at center,transparent 12%,color-mix(in srgb,var(--np-bg) 18%,transparent) 48%,color-mix(in srgb,var(--np-bg) 78%,transparent) 100%)!important;
+}
+#npOverlay .np-topbar{background:linear-gradient(180deg,color-mix(in srgb,var(--np-bg) 88%,transparent),transparent)!important;}
+#npOverlay .np-close,
+#npOverlay .lyrics-mobile-btn,
+#npOverlay .np-mode-btn,
+#npOverlay .np-secondary button,
+#npOverlay .np-icon-btn{
+  color:var(--np-text)!important;
+}
+#npOverlay .np-close,
+#npOverlay .lyrics-mobile-btn,
+#npOverlay .np-mode-btn,
+#npOverlay .np-secondary button{
+  background:var(--np-soft)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:0 8px 24px color-mix(in srgb,var(--np-shadow) 45%,transparent);
+}
+#npOverlay .np-mode-btn.active,
+#npOverlay .np-secondary button.on,
+#npOverlay .np-icon-btn.on{
+  background:var(--np-accent)!important;
+  color:var(--np-accent-contrast)!important;
+  border-color:var(--np-accent)!important;
+}
+#npOverlay .np-title{color:var(--np-text)!important;text-shadow:0 2px 22px color-mix(in srgb,var(--np-accent) 24%,transparent);}
+#npOverlay .np-artist,
+#npOverlay .np-album,
+#npOverlay .np-times{color:var(--np-muted)!important;}
+#npOverlay .np-poster-wrap{
+  background:var(--np-card)!important;
+  border:1px solid var(--np-border)!important;
+  box-shadow:0 30px 70px var(--np-shadow),0 0 60px var(--glow)!important;
+}
+#npOverlay .np-center{color:var(--np-text)!important;}
+#npOverlay .np-right{
+  background:color-mix(in srgb,var(--np-surface) 88%,transparent)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--np-text) 4%,transparent),0 22px 55px var(--np-shadow);
+}
+#npOverlay .np-right h4{color:var(--np-accent)!important;}
+#npOverlay .np-play-circle{
+  background:var(--np-accent)!important;
+  color:var(--np-accent-contrast)!important;
+  box-shadow:0 0 30px var(--glow)!important;
+}
+#npOverlay .np-progress .bar{background:color-mix(in srgb,var(--np-text) 14%,transparent)!important;}
+#npOverlay .np-progress .fill{background:linear-gradient(90deg,var(--accent2),var(--np-accent))!important;box-shadow:0 0 12px var(--glow)!important;}
+#npOverlay .lyric-line{color:color-mix(in srgb,var(--np-text) 36%,transparent)!important;}
+#npOverlay .lyric-line:hover{color:color-mix(in srgb,var(--np-text) 88%,transparent)!important;background:var(--np-soft)!important;}
+#npOverlay .lyric-line.active{
+  color:var(--np-text)!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 18%,transparent),color-mix(in srgb,var(--np-accent) 7%,transparent),transparent 88%)!important;
+  border-left-color:var(--np-accent)!important;
+  box-shadow:0 0 20px color-mix(in srgb,var(--np-accent) 16%,transparent),inset 0 0 22px color-mix(in srgb,var(--np-accent) 7%,transparent)!important;
+}
+#npOverlay .lyric-line.active::after{color:var(--np-accent)!important;text-shadow:0 0 12px var(--np-accent)!important;}
+#npOverlay .lyric-word{color:color-mix(in srgb,var(--np-text) 40%,transparent)!important;}
+#npOverlay .lyric-word.done,
+#npOverlay .lyric-word.current{color:var(--np-text)!important;text-shadow:0 0 6px var(--np-text),0 0 15px var(--np-accent),0 0 30px var(--glow)!important;}
+#npOverlay .mobile-lyrics-card{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--np-surface) 96%,transparent),color-mix(in srgb,var(--np-bg) 98%,transparent))!important;
+  border-color:var(--np-border)!important;
+}
+#npOverlay .mobile-lyrics-head strong{color:var(--np-text)!important;text-shadow:0 0 14px var(--np-accent)!important;}
+#npOverlay .mobile-lyrics-close{background:var(--np-soft)!important;border-color:var(--np-border)!important;color:var(--np-text)!important;}
+
+/* GLASS */
+body[data-theme="dark"] #npOverlay{
+  --np-bg:#060913;--np-surface:rgba(18,24,38,.72);--np-card:#0d1322;
+  --np-border:rgba(139,220,255,.16);--np-text:#f7fbff;--np-muted:#94a6bc;
+  --np-soft:rgba(139,220,255,.065);--np-strong:rgba(139,220,255,.12);--np-shadow:rgba(0,0,0,.5);
+  --np-accent-contrast:#061018;
+}
+/* ALMOND */
+body[data-theme="light"] #npOverlay{
+  --np-bg:#f1e8da;--np-surface:rgba(255,250,242,.78);--np-card:#fffaf3;
+  --np-border:rgba(111,67,37,.16);--np-text:#241b15;--np-muted:#75685d;
+  --np-soft:rgba(111,67,37,.065);--np-strong:rgba(111,67,37,.11);--np-shadow:rgba(79,50,30,.20);
+  --np-accent-contrast:#21160f;
+}
+body[data-theme="light"] #npOverlay .np-bg{filter:saturate(.82) brightness(1.06)!important;opacity:.20!important;}
+body[data-theme="light"] #npOverlay .np-poster-wrap{box-shadow:0 24px 55px rgba(79,50,30,.22),0 0 45px var(--glow)!important;}
+body[data-theme="light"] #npOverlay .lyric-line{color:rgba(36,27,21,.38)!important;}
+/* AMOLED */
+body[data-theme="amoled"] #npOverlay{
+  --np-bg:#000;--np-surface:rgba(7,7,10,.84);--np-card:#050505;
+  --np-border:rgba(167,139,250,.18);--np-text:#f8f7ff;--np-muted:#aaa4bd;
+  --np-soft:rgba(167,139,250,.065);--np-strong:rgba(167,139,250,.12);--np-shadow:rgba(0,0,0,.72);
+  --np-accent-contrast:#100b1d;
+}
+
+/* AUTO — accent is supplied by the song-color engine. The surface palette is generated from it by JS. */
+#npOverlay.bo-np-auto{
+  --np-accent-contrast:#fff;
+}
+#npOverlay.bo-np-auto.np-auto-light{
+  --np-accent-contrast:#18110a;
+}
+#npOverlay.bo-np-auto .np-bg{opacity:.25!important;}
+
+@media(max-width:600px){
+  #npOverlay .np-close,#npOverlay .lyrics-mobile-btn,#npOverlay .np-mode-btn,#npOverlay .np-secondary button{box-shadow:none;}
+}
+</style>
+<script id="bo-now-playing-theme-sync-js">
+(()=>{
+  'use strict';
+  const overlay=()=>document.getElementById('npOverlay');
+  const root=document.documentElement;
+  const clamp=n=>Math.max(0,Math.min(255,n));
+  function parseRGB(value){
+    if(!value)return null;
+    const s=String(value).trim();
+    let m=s.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+    if(m)return [+m[1],+m[2],+m[3]];
+    m=s.match(/^#([0-9a-f]{6})$/i);
+    if(m)return [parseInt(m[1].slice(0,2),16),parseInt(m[1].slice(2,4),16),parseInt(m[1].slice(4,6),16)];
+    return null;
+  }
+  function rgbHex(rgb){return '#'+rgb.map(v=>clamp(Math.round(v)).toString(16).padStart(2,'0')).join('');}
+  function mix(a,b,p){return a.map((v,i)=>v+(b[i]-v)*p);}
+  function luminance(c){
+    const x=c.map(v=>v/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
+    return .2126*x[0]+.7152*x[1]+.0722*x[2];
+  }
+  function applyAutoPalette(el){
+    const accent=parseRGB(getComputedStyle(root).getPropertyValue('--accent'))||parseRGB(getComputedStyle(document.body).getPropertyValue('--accent'))||[201,147,91];
+    const lum=luminance(accent);
+    const light=lum>.56;
+    const bg=light?mix(accent,[255,255,255],.90):mix(accent,[3,5,10],.88);
+    const surface=light?mix(accent,[255,255,255],.82):mix(accent,[10,14,24],.78);
+    const card=light?mix(accent,[255,255,255],.72):mix(accent,[14,18,30],.72);
+    const text=light?[32,25,20]:[247,249,255];
+    const muted=light?mix(text,[110,95,80],.48):mix(text,[120,132,154],.58);
+    const border=light?`rgba(${Math.round(accent[0])},${Math.round(accent[1])},${Math.round(accent[2])},.18)`:`rgba(${Math.round(accent[0])},${Math.round(accent[1])},${Math.round(accent[2])},.16)`;
+    el.classList.toggle('np-auto-light',light);
+    el.style.setProperty('--np-accent',rgbHex(accent));
+    el.style.setProperty('--np-bg',rgbHex(bg));
+    el.style.setProperty('--np-surface',`rgba(${Math.round(surface[0])},${Math.round(surface[1])},${Math.round(surface[2])},.78)`);
+    el.style.setProperty('--np-card',rgbHex(card));
+    el.style.setProperty('--np-border',border);
+    el.style.setProperty('--np-text',rgbHex(text));
+    el.style.setProperty('--np-muted',rgbHex(muted));
+    el.style.setProperty('--np-soft',light?`rgba(90,60,30,.055)`:`rgba(255,255,255,.055)`);
+    el.style.setProperty('--np-shadow',light?'rgba(70,45,25,.20)':'rgba(0,0,0,.48)');
+  }
+  function sync(){
+    const el=overlay(); if(!el)return;
+    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
+    el.classList.toggle('bo-np-auto',auto);
+    if(auto){
+      applyAutoPalette(el);
+    }else{
+      ['--np-accent','--np-bg','--np-surface','--np-card','--np-border','--np-text','--np-muted','--np-soft','--np-shadow'].forEach(v=>el.style.removeProperty(v));
+      el.classList.remove('np-auto-light');
+    }
+  }
+  let lastTheme='',lastAccent='';
+  function watch(){
+    const el=overlay(); if(!el)return;
+    const theme=document.body.dataset.theme||'';
+    const accent=getComputedStyle(root).getPropertyValue('--accent').trim();
+    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
+    if(theme!==lastTheme || accent!==lastAccent || auto!==el.classList.contains('bo-np-auto')){
+      lastTheme=theme;lastAccent=accent;sync();
+    }else if(auto) applyAutoPalette(el);
+  }
+  const observer=new MutationObserver(()=>{sync();});
+  observer.observe(document.body,{attributes:true,attributeFilter:['data-theme']});
+  observer.observe(root,{attributes:true,attributeFilter:['style']});
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-side-theme],[data-bo-theme],#boThemeColor,#customColorInput,#boSideColor')) setTimeout(sync,20);
+  },true);
+  window.addEventListener('storage',sync);
+  setInterval(watch,450);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+})();
+</script>
+
+<style id="bo-now-playing-final-theme-override">
+/* FINAL NOW PLAYING SKIN: every visible surface follows the active theme. */
+#npOverlay .np-topbar,
+#npOverlay .np-left,
+#npOverlay .np-center,
+#npOverlay .np-right,
+#npOverlay .np-poster-wrap,
+#npOverlay .np-secondary,
+#npOverlay .np-karaoke-tools,
+#npOverlay .np-progress,
+#npOverlay .np-times{
+  color:var(--np-text)!important;
+}
+#npOverlay .np-left,
+#npOverlay .np-center,
+#npOverlay .np-right{
+  background:var(--np-surface)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:0 18px 55px var(--np-shadow),inset 0 1px 0 color-mix(in srgb,var(--np-text) 5%,transparent)!important;
+  backdrop-filter:blur(28px) saturate(1.12)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.12)!important;
+}
+#npOverlay .np-topbar{
+  background:color-mix(in srgb,var(--np-bg) 78%,transparent)!important;
+  border-bottom:1px solid var(--np-border)!important;
+  backdrop-filter:blur(24px)!important;
+  -webkit-backdrop-filter:blur(24px)!important;
+}
+#npOverlay .np-poster-wrap{
+  background:var(--np-card)!important;
+  border:1px solid var(--np-border)!important;
+}
+#npOverlay .np-artist,#npOverlay .np-album,#npOverlay .np-times{color:var(--np-muted)!important;}
+#npOverlay .np-icon-btn,
+#npOverlay .np-secondary button,
+#npOverlay .np-karaoke-tools button,
+#npOverlay .lyrics-mobile-btn,
+#npOverlay .np-mode-btn,
+#npOverlay .np-close{
+  background:var(--np-soft)!important;
+  color:var(--np-text)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:none!important;
+}
+#npOverlay .np-mode-btn.active,
+#npOverlay .np-secondary button.on,
+#npOverlay .np-karaoke-tools button.active,
+#npOverlay .np-icon-btn.on{
+  background:var(--np-accent)!important;
+  color:var(--np-accent-contrast)!important;
+  border-color:var(--np-accent)!important;
+  box-shadow:0 0 22px var(--glow)!important;
+}
+#npOverlay .np-play-circle{
+  background:var(--np-accent)!important;
+  color:var(--np-accent-contrast)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:0 0 34px var(--glow)!important;
+}
+#npOverlay .np-progress .bar,
+#npOverlay .np-seek-visual .track{
+  background:color-mix(in srgb,var(--np-text) 14%,transparent)!important;
+}
+#npOverlay .np-progress .fill,
+#npOverlay .np-seek-visual .fill{
+  background:linear-gradient(90deg,var(--np-accent),var(--accent3))!important;
+  box-shadow:0 0 14px var(--glow)!important;
+}
+#npOverlay .np-seek-slider{accent-color:var(--np-accent)!important;}
+#npOverlay .np-seek-slider::-webkit-slider-thumb{background:var(--np-accent)!important;box-shadow:0 0 15px var(--glow)!important;}
+#npOverlay .np-seek-slider::-moz-range-thumb{background:var(--np-accent)!important;box-shadow:0 0 15px var(--glow)!important;}
+#npOverlay .np-right h4{color:var(--np-accent)!important;text-shadow:0 0 16px var(--glow)!important;}
+#npOverlay .lyric-line{color:color-mix(in srgb,var(--np-text) 38%,transparent)!important;}
+#npOverlay .lyric-line:hover{background:var(--np-soft)!important;color:var(--np-text)!important;}
+#npOverlay .lyric-line.active{
+  color:var(--np-text)!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 20%,transparent),color-mix(in srgb,var(--np-accent) 6%,transparent),transparent 90%)!important;
+  border-left-color:var(--np-accent)!important;
+  text-shadow:0 0 12px color-mix(in srgb,var(--np-accent) 55%,transparent)!important;
+}
+#npOverlay .lyric-word.done,#npOverlay .lyric-word.current{
+  color:var(--np-text)!important;text-shadow:0 0 6px var(--np-text),0 0 16px var(--np-accent),0 0 30px var(--glow)!important;
+}
+#npOverlay .mobile-lyrics-card{
+  background:var(--np-surface)!important;
+  border-color:var(--np-border)!important;
+  box-shadow:0 -25px 70px var(--np-shadow),0 -8px 35px var(--glow)!important;
+}
+#npOverlay .mobile-lyrics-head{border-bottom-color:var(--np-border)!important;}
+#npOverlay .mobile-lyrics-head strong{color:var(--np-text)!important;}
+#npOverlay .mobile-lyrics-close{background:var(--np-soft)!important;color:var(--np-text)!important;border-color:var(--np-border)!important;}
+
+/* Presets: explicitly set all Now Playing palette variables. */
+body[data-theme="dark"] #npOverlay{
+  --np-bg:#060913;--np-surface:rgba(18,24,38,.72);--np-card:#0d1322;
+  --np-border:rgba(139,220,255,.18);--np-text:#f7fbff;--np-muted:#94a6bc;
+  --np-soft:rgba(139,220,255,.07);--np-accent:var(--accent);--np-accent-contrast:#061018;--np-shadow:rgba(0,0,0,.52);
+}
+body[data-theme="light"] #npOverlay{
+  --np-bg:#f1e8da;--np-surface:rgba(255,250,242,.82);--np-card:#fffaf3;
+  --np-border:rgba(111,67,37,.18);--np-text:#241b15;--np-muted:#75685d;
+  --np-soft:rgba(111,67,37,.07);--np-accent:var(--accent);--np-accent-contrast:#21160f;--np-shadow:rgba(79,50,30,.22);
+}
+body[data-theme="amoled"] #npOverlay{
+  --np-bg:#000;--np-surface:rgba(7,7,10,.88);--np-card:#050505;
+  --np-border:rgba(167,139,250,.20);--np-text:#f8f7ff;--np-muted:#aaa4bd;
+  --np-soft:rgba(167,139,250,.07);--np-accent:var(--accent);--np-accent-contrast:#100b1d;--np-shadow:rgba(0,0,0,.76);
+}
+#npOverlay.bo-np-auto{
+  background:var(--np-bg)!important;
+}
+#npOverlay.bo-np-auto .np-left,
+#npOverlay.bo-np-auto .np-center,
+#npOverlay.bo-np-auto .np-right{
+  background:var(--np-surface)!important;
+}
+@media(max-width:600px){
+  #npOverlay .np-left,#npOverlay .np-center,#npOverlay .np-right{box-shadow:0 12px 35px var(--np-shadow)!important;}
+}
+</style>
+<script id="bo-now-playing-final-theme-watch">
+(()=>{
+  const sync=()=>{
+    const el=document.getElementById('npOverlay'); if(!el)return;
+    const auto=window.__boAutoSongColor===true || localStorage.getItem('bo_auto_song_color')==='1';
+    el.classList.toggle('bo-np-auto',auto);
+    if(auto && typeof applyAutoPalette==='function') applyAutoPalette(el);
+  };
+  window.boSyncNowPlayingTheme=sync;
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-side-theme],[data-bo-theme]')) setTimeout(sync,30);
+  },true);
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-theme','class']});
+  window.addEventListener('resize',sync,{passive:true});
+  setTimeout(sync,0);
+})();
+</script>
+
+<!-- ===== NOW PLAYING FINAL THEME BINDING ===== -->
+<style id="now-playing-real-theme-fix">
+/* Now Playing MUST use the same live palette as the main website. */
+#npOverlay{
+  --np-accent:var(--ui-accent,var(--accent));
+  --np-accent-light:var(--ui-accent-light,var(--accent3));
+  --np-accent-dark:var(--ui-accent-dark,var(--accent2));
+  --np-glow:var(--ui-accent-glow,var(--glow));
+  background:
+    radial-gradient(900px 600px at 15% 15%,color-mix(in srgb,var(--np-accent) 18%,transparent),transparent 65%),
+    radial-gradient(900px 600px at 85% 85%,color-mix(in srgb,var(--np-accent) 12%,transparent),transparent 68%),
+    var(--ui-bg,#070707) !important;
+  color:var(--text,#f8f5ef) !important;
+}
+#npOverlay .np-bg{
+  opacity:.24 !important;
+  filter:blur(28px) saturate(1.15) brightness(.62) !important;
+  transform:scale(1.08);
+}
+#npOverlay .np-topbar,
+#npOverlay .np-left,
+#npOverlay .np-center,
+#npOverlay .np-right{
+  background:color-mix(in srgb,var(--ui-panel,#171717) 76%,transparent) !important;
+  border-color:color-mix(in srgb,var(--np-accent) 28%,var(--border,rgba(255,255,255,.12))) !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.055) !important;
+  backdrop-filter:blur(28px) saturate(1.12) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.12) !important;
+}
+#npOverlay .np-topbar{
+  background:color-mix(in srgb,var(--ui-panel,#171717) 70%,transparent) !important;
+}
+#npOverlay .np-right{
+  background:color-mix(in srgb,var(--ui-card,#111) 74%,transparent) !important;
+}
+#npOverlay .np-title{color:var(--text,#fff)!important;text-shadow:0 2px 22px rgba(0,0,0,.48)!important}
+#npOverlay .np-artist,#npOverlay .np-album{color:var(--text-dim,#b8b8b8)!important}
+#npOverlay .np-icon-btn,
+#npOverlay .np-secondary button,
+#npOverlay .np-karaoke-tools button,
+#npOverlay .lyrics-mobile-btn{
+  background:color-mix(in srgb,var(--ui-accent) 9%,rgba(255,255,255,.035)) !important;
+  border-color:color-mix(in srgb,var(--np-accent) 28%,var(--border,rgba(255,255,255,.12))) !important;
+  color:var(--text,#f5f5f5)!important;
+}
+#npOverlay .np-icon-btn:hover,
+#npOverlay .np-secondary button:hover,
+#npOverlay .np-karaoke-tools button:hover,
+#npOverlay .lyrics-mobile-btn:hover{
+  background:color-mix(in srgb,var(--np-accent) 18%,transparent)!important;
+  border-color:color-mix(in srgb,var(--np-accent) 52%,transparent)!important;
+}
+#npOverlay .np-play-circle{
+  background:linear-gradient(145deg,var(--np-accent-light),var(--np-accent-dark))!important;
+  color:var(--ui-bg,#080808)!important;
+  border-color:color-mix(in srgb,var(--np-accent-light) 58%,transparent)!important;
+  box-shadow:0 0 35px var(--np-glow),inset 0 1px 0 rgba(255,255,255,.38)!important;
+}
+#npOverlay .np-secondary button.on,
+#npOverlay .np-karaoke-tools button.active,
+#npOverlay .karaoke-badge.active{
+  background:color-mix(in srgb,var(--np-accent) 24%,transparent)!important;
+  color:var(--np-accent-light)!important;
+  border-color:color-mix(in srgb,var(--np-accent) 58%,transparent)!important;
+  box-shadow:0 0 20px color-mix(in srgb,var(--np-accent) 20%,transparent)!important;
+}
+#npOverlay .np-right h4{color:var(--np-accent)!important;text-shadow:0 0 18px var(--np-glow)!important}
+#npOverlay .np-seek-visual .fill{background:linear-gradient(90deg,var(--np-accent-dark),var(--np-accent-light))!important;box-shadow:0 0 12px var(--np-glow)!important}
+#npOverlay .np-seek-slider{accent-color:var(--np-accent)!important}
+#npOverlay .np-seek-slider::-webkit-slider-thumb{background:var(--np-accent)!important;box-shadow:0 0 16px var(--np-glow)!important}
+#npOverlay .np-seek-slider::-moz-range-thumb{background:var(--np-accent)!important;box-shadow:0 0 16px var(--np-glow)!important}
+#npOverlay .lyric-line{color:color-mix(in srgb,var(--text,#fff) 38%,transparent)!important}
+#npOverlay .lyric-line:hover{background:color-mix(in srgb,var(--np-accent) 8%,transparent)!important;color:var(--text,#fff)!important}
+#npOverlay .lyric-line.active{
+  color:var(--text,#fff)!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--np-accent) 22%,transparent),transparent 90%)!important;
+  border-left-color:var(--np-accent)!important;
+  text-shadow:0 0 14px var(--np-glow)!important;
+  box-shadow:0 0 22px color-mix(in srgb,var(--np-accent) 12%,transparent),inset 0 0 24px color-mix(in srgb,var(--np-accent) 6%,transparent)!important;
+}
+#npOverlay .lyric-word.done,#npOverlay .lyric-word.current{color:var(--text,#fff)!important;text-shadow:0 0 7px #fff,0 0 18px var(--np-accent),0 0 34px var(--np-glow)!important}
+#npOverlay .mobile-lyrics-card{
+  background:color-mix(in srgb,var(--ui-card,#111) 94%,transparent)!important;
+  border-color:color-mix(in srgb,var(--np-accent) 30%,transparent)!important;
+  box-shadow:0 -25px 70px rgba(0,0,0,.58),0 -8px 45px var(--np-glow)!important;
+}
+#npOverlay .mobile-lyrics-head{border-bottom-color:color-mix(in srgb,var(--np-accent) 20%,transparent)!important}
+#npOverlay .mobile-lyrics-head strong{color:var(--np-accent-light)!important;text-shadow:0 0 16px var(--np-glow)!important}
+#npOverlay .mobile-lyrics-close{background:color-mix(in srgb,var(--np-accent) 8%,transparent)!important;border-color:color-mix(in srgb,var(--np-accent) 25%,transparent)!important;color:var(--text,#fff)!important}
+
+/* Explicit presets: these are intentionally different, not just accent swaps. */
+body[data-theme="dark"] #npOverlay{--np-panel-alpha:.68}
+body[data-theme="light"] #npOverlay{
+  --np-panel-alpha:.72;
+  color:#241a12!important;
+}
+body[data-theme="light"] #npOverlay .np-left,
+body[data-theme="light"] #npOverlay .np-center,
+body[data-theme="light"] #npOverlay .np-right,
+body[data-theme="light"] #npOverlay .np-topbar{
+  background:rgba(53,38,27,.72)!important;
+}
+body[data-theme="amoled"] #npOverlay{background:#000!important}
+body[data-theme="amoled"] #npOverlay .np-left,
+body[data-theme="amoled"] #npOverlay .np-center,
+body[data-theme="amoled"] #npOverlay .np-right,
+body[data-theme="amoled"] #npOverlay .np-topbar{background:rgba(8,8,12,.82)!important}
+
+/* Auto: artwork palette is live through --ui-accent / --ui-bg. */
+body.bo-np-auto #npOverlay .np-bg{opacity:.32!important;filter:blur(32px) saturate(1.28) brightness(.58)!important}
+body.bo-np-auto #npOverlay .np-left,
+body.bo-np-auto #npOverlay .np-center,
+body.bo-np-auto #npOverlay .np-right{background:color-mix(in srgb,var(--ui-panel) 68%,transparent)!important}
+</style>
+<script id="now-playing-real-theme-fix-js">
+(()=>{
+  'use strict';
+  const KEY='bo_auto_song_color';
+  const overlay=()=>document.getElementById('npOverlay');
+  function sync(){
+    const ov=overlay(); if(!ov) return;
+    const auto=localStorage.getItem(KEY)==='1';
+    document.body.classList.toggle('bo-np-auto',auto);
+    /* Keep Now Playing on the current preset while Auto owns only the live palette. */
+    const t=document.body.dataset.theme||state?.theme||'light';
+    ov.dataset.npTheme=auto?'auto':t;
+  }
+  function repaint(){
+    const ov=overlay(); if(!ov) return;
+    const t=typeof currentTrack==='function'?currentTrack():null;
+    if(document.body.classList.contains('bo-np-auto') && t && typeof window.__boExtractSongColor==='function'){
+      window.__boExtractSongColor(t);
+    }
+    sync();
+  }
+  window.__boSyncNowPlayingTheme=sync;
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('[data-bo-theme],[data-side-theme],#boThemeColor')) setTimeout(repaint,30);
+  },true);
+  window.addEventListener('storage',e=>{if(e.key===KEY||e.key==='bo_custom_accent')setTimeout(sync,0)});
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-theme','class']});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+})();
+</script>
+<style id="booster-nowplaying-topbar-theme-glow">
+/* ONLY the Now Playing top bar. No glow is applied anywhere else on the website. */
+#npOverlay .np-topbar{
+  position:relative!important;
+  isolation:isolate!important;
+  border-bottom:2px solid color-mix(in srgb,var(--accent,#62c8ff) 62%,transparent)!important;
+  box-shadow:0 1px 0 color-mix(in srgb,var(--accent,#62c8ff) 20%,transparent)!important;
+}
+#npOverlay .np-topbar::after{
+  content:"";
+  position:absolute;
+  left:8%;right:8%;bottom:-2px;
+  height:4px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb,var(--accent,#62c8ff) 68%,transparent) 18%,
+    color-mix(in srgb,var(--accent,#62c8ff) 100%,transparent) 50%,
+    color-mix(in srgb,var(--accent,#62c8ff) 68%,transparent) 82%,
+    transparent);
+  box-shadow:0 0 7px color-mix(in srgb,var(--accent,#62c8ff) 72%,transparent),0 0 18px color-mix(in srgb,var(--accent,#62c8ff) 55%,transparent),0 0 32px color-mix(in srgb,var(--accent,#62c8ff) 28%,transparent);
+  opacity:1;
+  transition:opacity .22s ease,box-shadow .22s ease;
+}
+/* Theme accent only for these two Now Playing top-bar controls. */
+#npOverlay .np-topbar .np-close,
+#npOverlay .np-topbar .lyrics-mobile-btn{
+  border-color:color-mix(in srgb,var(--accent,#62c8ff) 28%,var(--border,rgba(255,255,255,.12)))!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #npOverlay .np-topbar::after{transition:none!important;}
+}
+</style>
+
+
+<style id="booster-home-nowplaying-beat-sync">
+/* HOME SCREEN ONLY: BOOSTER NOW PLAYING card */
+#homeNowPlayingSpotlight{
+  --bo-home-glow: 0;
+  --bo-home-glow-rgb: 98,200,255;
+  border-color: rgba(var(--bo-home-glow-rgb), calc(.32 + var(--bo-home-glow) * .42)) !important;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.28),
+    0 0 calc(12px + var(--bo-home-glow) * 28px) rgba(var(--bo-home-glow-rgb), calc(.08 + var(--bo-home-glow) * .24)),
+    0 0 calc(28px + var(--bo-home-glow) * 58px) rgba(var(--bo-home-glow-rgb), calc(.035 + var(--bo-home-glow) * .16)),
+    inset 0 1px 0 rgba(255,255,255,.04) !important;
+  transition: border-color .18s linear, box-shadow .18s linear !important;
+}
+#homeNowPlayingSpotlight.bo-home-song-playing{
+  animation: boHomeNowPlayingBreath 2.8s ease-in-out infinite;
+}
+@keyframes boHomeNowPlayingBreath{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(calc(1 + var(--bo-home-glow) * .035))}
+}
+@media (prefers-reduced-motion: reduce){
+  #homeNowPlayingSpotlight.bo-home-song-playing{animation:none}
+}
+</style>
+<script id="booster-home-nowplaying-beat-sync-js">
+(()=>{
+  const card = document.getElementById('homeNowPlayingSpotlight');
+  if(!card) return;
+
+  const root = document.documentElement;
+  let glow = 0, last = performance.now();
+
+  function playing(){
+    try{
+      const a = window.activeAudio;
+      return !!(window.state?.isPlaying && a && !a.paused && !a.ended);
+    }catch(e){ return false; }
+  }
+
+  function accent(){
+    try{
+      const v = getComputedStyle(root).getPropertyValue('--accent').trim();
+      const m = v.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+      if(m) return `${Math.round(+m[1])},${Math.round(+m[2])},${Math.round(+m[3])}`;
+      const h = v.match(/^#([0-9a-f]{6})$/i);
+      if(h){
+        const n=parseInt(h[1],16);
+        return `${n>>16},${(n>>8)&255},${n&255}`;
+      }
+    }catch(e){}
+    return '98,200,255';
+  }
+
+  function beat(){
+    try{
+      if(typeof window.beatPulse === 'number')
+        return Math.max(0,Math.min(1,window.beatPulse));
+    }catch(e){}
+    return 0;
+  }
+
+  function loop(now){
+    const dt=Math.min(.12,(now-last)/1000); last=now;
+    const on=playing();
+    const b=on ? beat() : 0;
+
+    /* Persistent base glow while playing; beat only modulates intensity. */
+    const target=on ? Math.min(1,.42+b*1.9) : 0;
+    const rate=1-Math.exp(-dt*(target>glow?8:5.5));
+    glow += (target-glow)*rate;
+
+    card.style.setProperty('--bo-home-glow',glow.toFixed(3));
+    card.style.setProperty('--bo-home-glow-rgb',accent());
+    card.classList.toggle('bo-home-song-playing',on);
+
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+})();
+</script>
+
+
+
+
+
+
+
+
+<style id="booster-home-nowplaying-premium">
+/* =========================================================
+   BOOSTER HOME — NOW PLAYING PREMIUM CARD
+   Only #homeNowPlayingSpotlight is affected.
+   ========================================================= */
+#homeNowPlayingSpotlight{
+  --np-rgb: 139,92,246;
+  --np-power: 0;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid rgba(var(--np-rgb),.34) !important;
+  box-shadow:
+    0 18px 55px rgba(0,0,0,.28),
+    0 0 18px rgba(var(--np-rgb),calc(.10 + var(--np-power)*.12)),
+    0 0 42px rgba(var(--np-rgb),calc(.045 + var(--np-power)*.10)) !important;
+  transition:
+    border-color .35s ease,
+    box-shadow .35s ease,
+    transform .35s ease !important;
+}
+
+/* Soft colour wash stays INSIDE the card. */
+#homeNowPlayingSpotlight::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(
+      circle at 72% 48%,
+      rgba(var(--np-rgb),calc(.04 + var(--np-power)*.10)),
+      transparent 48%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--np-rgb),calc(.015 + var(--np-power)*.035)),
+      transparent 42%
+    );
+  opacity:.9;
+}
+
+/* Thin animated theme light running along the top edge. */
+#homeNowPlayingSpotlight::after{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:-1px;
+  height:2px;
+  border-radius:999px;
+  pointer-events:none;
+  z-index:3;
+  background:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(var(--np-rgb),0) 8%,
+    rgba(var(--np-rgb),.95) 50%,
+    rgba(var(--np-rgb),0) 92%,
+    transparent 100%
+  );
+  filter:blur(.15px);
+  opacity:calc(.20 + var(--np-power)*.72);
+  transform:scaleX(calc(.55 + var(--np-power)*.45));
+  transform-origin:center;
+  transition:opacity .25s ease,transform .25s ease;
+}
+
+#homeNowPlayingSpotlight > *{
+  position:relative;
+  z-index:1;
+}
+
+/* Small, premium movement only while a song is actually playing. */
+#homeNowPlayingSpotlight.np-premium-playing{
+  animation:boosterNowPlayingFloat 4.2s ease-in-out infinite;
+}
+
+@keyframes boosterNowPlayingFloat{
+  0%,100%{
+    transform:translate3d(0,0,0) scale(1);
+  }
+  50%{
+    transform:translate3d(0,-2px,0) scale(1.0015);
+  }
+}
+
+/* Artwork gets only a tiny movement — not a distracting zoom. */
+#homeNowPlayingSpotlight.np-premium-playing img{
+  animation:boosterNowPlayingArt 7s ease-in-out infinite;
+  transform-origin:center;
+}
+@keyframes boosterNowPlayingArt{
+  0%,100%{transform:scale(1) translate3d(0,0,0)}
+  50%{transform:scale(1.012) translate3d(-3px,-1px,0)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #homeNowPlayingSpotlight.np-premium-playing,
+  #homeNowPlayingSpotlight.np-premium-playing img{
+    animation:none !important;
+  }
+}
+
+@media (max-width:600px){
+  #homeNowPlayingSpotlight::after{
+    left:5%;
+    right:5%;
+  }
+}
+</style>
+
+<script id="booster-home-nowplaying-premium-js">
+(()=>{
+  const card=document.getElementById('homeNowPlayingSpotlight');
+  if(!card) return;
+
+  let last=performance.now();
+  let power=0;
+
+  function getAudio(){
+    if(window.activeAudio instanceof HTMLAudioElement) return window.activeAudio;
+    return [...document.querySelectorAll('audio')]
+      .find(a=>!a.paused && !a.ended) || document.querySelector('audio');
+  }
+
+  function getThemeRGB(){
+    const css=getComputedStyle(document.documentElement);
+    const v=css.getPropertyValue('--accent').trim();
+
+    let m=v.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s]+[\d.]+)?\s*\)/i);
+    if(m) return `${Math.round(+m[1])},${Math.round(+m[2])},${Math.round(+m[3])}`;
+
+    m=v.match(/^#([0-9a-f]{6})$/i);
+    if(m){
+      const n=parseInt(m[1],16);
+      return `${n>>16},${(n>>8)&255},${n&255}`;
+    }
+    return '139,92,246';
+  }
+
+  function frame(now){
+    const dt=Math.min(.12,(now-last)/1000);
+    last=now;
+
+    const audio=getAudio();
+    const playing=!!(audio && !audio.paused && !audio.ended);
+
+    /* Persistent base glow while playing. If Booster exposes beatPulse,
+       it gently modulates the strength; otherwise the motion remains smooth. */
+    let pulse=0;
+    try{
+      pulse=typeof window.beatPulse==='number'
+        ? Math.max(0,Math.min(1,window.beatPulse))
+        : 0;
+    }catch(e){}
+
+    const target=playing ? (.48 + pulse*.34) : 0;
+    const rate=1-Math.exp(-dt*(target>power?7.5:4.8));
+    power += (target-power)*rate;
+
+    card.style.setProperty('--np-rgb',getThemeRGB());
+    card.style.setProperty('--np-power',power.toFixed(3));
+    card.classList.toggle('np-premium-playing',playing);
+
+    requestAnimationFrame(frame);
+  }
+
+  document.addEventListener('play',e=>{
+    if(e.target instanceof HTMLAudioElement){
+      card.classList.add('np-premium-playing');
+    }
+  },true);
+
+  document.addEventListener('pause',e=>{
+    if(e.target instanceof HTMLAudioElement){
+      card.classList.remove('np-premium-playing');
+    }
+  },true);
+
+  document.addEventListener('ended',e=>{
+    if(e.target instanceof HTMLAudioElement){
+      card.classList.remove('np-premium-playing');
+    }
+  },true);
+
+  requestAnimationFrame(frame);
+})();
+</script>
+
+
+
+
+
+<style id="booster-home-nowplaying-big-glow">
+/* BOOSTER HOME: ONLY the Home Now Playing card gets the larger theme glow. */
+#homeNowPlayingSpotlight{
+  border:2px solid var(--accent)!important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--accent) 55%,transparent),
+    0 0 28px var(--glow),
+    0 0 58px color-mix(in srgb,var(--accent) 24%,transparent),
+    0 20px 55px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.06)!important;
+  transition:box-shadow .35s ease,border-color .35s ease!important;
+}
+#homeNowPlayingSpotlight:hover{
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--accent) 70%,transparent),
+    0 0 36px var(--glow),
+    0 0 78px color-mix(in srgb,var(--accent) 30%,transparent),
+    0 20px 55px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+@supports not (color:color-mix(in srgb,red 50%,transparent)){
+  #homeNowPlayingSpotlight{box-shadow:0 0 0 1px var(--accent),0 0 30px var(--glow),0 20px 55px rgba(0,0,0,.28)!important;}
+}
+@media(max-width:600px){
+  #homeNowPlayingSpotlight{
+    border-width:2px!important;
+    box-shadow:0 0 0 1px var(--accent),0 0 22px var(--glow),0 0 42px rgba(0,0,0,.12),0 16px 38px rgba(0,0,0,.22)!important;
+  }
+}
+</style>
+
+
+<!-- FULLSCREEN STABILITY + APP-WIDE INTERACTION PATCH -->
+<style id="bo-fullscreen-stability-final">
+/* Fullscreen belongs to the whole app so every existing modal/tab can open. */
+:fullscreen{background:var(--bg-main,#0b0b0b)!important;}
+html:fullscreen,html:fullscreen body{width:100%!important;height:100%!important;min-height:100%!important;overflow:hidden!important;}
+html:fullscreen body{isolation:isolate;}
+html:fullscreen #npOverlay{z-index:2147483000!important;}
+html:fullscreen .modal-overlay,
+html:fullscreen .modal,
+html:fullscreen [role="dialog"],
+html:fullscreen .drawer,
+html:fullscreen .sheet,
+html:fullscreen .toast-container{z-index:2147482000!important;}
+/* Visual layers never steal pointer input from controls. */
+#npOverlay .np-bg,
+#npOverlay canvas,
+#npOverlay .spotlight-art-layer,
+#npOverlay .np-poster-wrap::before{pointer-events:none!important;}
+/* Never leave a transparent fullscreen layer blocking the page after exit. */
+html:not(:fullscreen) #npOverlay{isolation:isolate;}
+html.bo-fullscreen-exiting #npOverlay *{pointer-events:auto;}
+/* Keep buttons and sliders above visual/compositor layers. */
+#npOverlay .np-topbar,
+#npOverlay .np-grid,
+#npOverlay .np-controls,
+#npOverlay .np-secondary,
+#npOverlay .np-karaoke-tools,
+#npOverlay .np-progress,
+#npOverlay .np-right,
+#npOverlay .mobile-lyrics-sheet{position:relative;z-index:5;}
+#npOverlay button,#npOverlay input,#npOverlay [role="button"]{position:relative;z-index:6;pointer-events:auto;}
+/* In fullscreen, don't let accidental text/drag selection make the UI feel frozen. */
+html:fullscreen #npOverlay{user-select:none;-webkit-user-select:none;}
+</style>
+<script id="bo-fullscreen-stability-final-js">
+(()=>{
+  'use strict';
+  const root=document.documentElement;
+  const ov=()=>document.getElementById('npOverlay');
+  let lastState=!!document.fullscreenElement;
+
+  function syncFullscreenState(){
+    const fs=!!document.fullscreenElement;
+    lastState=fs;
+    root.classList.toggle('bo-fullscreen-active',fs);
+    root.classList.toggle('bo-fullscreen-exiting',!fs);
+    const player=ov();
+    if(player){
+      player.classList.toggle('browser-fullscreen',fs);
+      player.style.pointerEvents='auto';
+    }
+    /* Force a clean layout pass after browser fullscreen transitions. */
+    requestAnimationFrame(()=>{
+      try{ window.dispatchEvent(new Event('resize')); }catch(e){}
+      try{ if(typeof resizeCanvases==='function') resizeCanvases(); }catch(e){}
+    });
+  }
+
+  document.addEventListener('fullscreenchange',syncFullscreenState,{passive:true});
+  document.addEventListener('webkitfullscreenchange',syncFullscreenState,{passive:true});
+
+  /* Browser fullscreen can temporarily suppress pointer input during the
+     transition. Re-arm the interactive layer on the first user interaction. */
+  ['pointerdown','pointermove','touchstart','click'].forEach(type=>{
+    document.addEventListener(type,()=>{
+      if(document.fullscreenElement){
+        const player=ov();
+        if(player) player.style.pointerEvents='auto';
+      }
+      root.classList.remove('bo-fullscreen-exiting');
+    },{passive:true,capture:true});
+  });
+
+  /* Esc is intentionally NOT intercepted: the browser must remain in charge
+     of exiting fullscreen. We only clean the UI after the browser exits. */
+  window.addEventListener('blur',()=>{
+    if(document.fullscreenElement) requestAnimationFrame(syncFullscreenState);
+  },{passive:true});
+
+  /* Defensive recovery for code that accidentally leaves a stale fullscreen
+     class/inline pointer state behind. */
+  setInterval(()=>{
+    const fs=!!document.fullscreenElement;
+    if(fs!==lastState) syncFullscreenState();
+    const player=ov();
+    if(player && player.style.pointerEvents==='none') player.style.pointerEvents='auto';
+  },1000);
+
+  syncFullscreenState();
+})();
+</script>
 </body>
 </html>
-
