@@ -5390,7 +5390,7 @@ setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-C
    JioSaavn stays the built-in default source. Everything here is wrapped so a plugin failure never breaks the app. */
 (function BoosterPlugins(){
   var PK='plugins';
-  var cfg=Object.assign({source:'jiosaavn',enabled:{youtube:true,musicbrainz:true},lbToken:'',lbUser:'',pipedApi:''},Store.get(PK,{}));
+  var cfg=Object.assign({source:'jiosaavn',enabled:{youtube:true,musicbrainz:true},lbToken:'',lbUser:'',pipedApi:'',ytWorker:''},Store.get(PK,{}));
   cfg.enabled=Object.assign({youtube:true,musicbrainz:true},cfg.enabled||{});
   function save(){Store.set(PK,cfg);}
   var PLUGINS=[
@@ -5444,6 +5444,13 @@ setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-C
     async search(q){
       var k=q.toLowerCase(),h=searchCache.get(k);
       if(h&&Date.now()-h.t<6e5)return h.v;
+      if(cfg.ytWorker){
+        var wj=await jget(cfg.ytWorker+'/search?q='+encodeURIComponent(q),12000);
+        var wl=(wj||[]).map(function(x){return {id:'yt_'+x.id,name:String(x.title||'Untitled'),duration:Number(x.duration)||0,year:'',language:'',
+          image:x.thumb||FALLBACK_ART,artistName:String(x.artist||'YouTube').replace(/\s*-\s*Topic$/i,''),artistId:null,albumName:'',albumId:null,
+          downloadUrl:{},hasLyrics:false,_needsFetch:true,_plugin:'youtube',_ytId:x.id};});
+        searchCache.set(k,{t:Date.now(),v:wl});return wl;
+      }
       var j=await pipedGet('/search?q='+encodeURIComponent(q)+'&filter=music_songs');
       var items=(j.items||[]).filter(function(x){return x&&x.url&&x.url.indexOf('/watch')===0;});
       if(!items.length){j=await pipedGet('/search?q='+encodeURIComponent(q)+'&filter=videos');
@@ -5455,6 +5462,11 @@ setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-C
     stale:function(t){return !!t&&t._plugin==='youtube'&&(!t._ytAt||Date.now()-t._ytAt>12e6||!Object.keys(t.downloadUrl||{}).length);},
     async resolve(t){
       if(!YT.stale(t))return t;
+      if(cfg.ytWorker){
+        var wu=cfg.ytWorker+'/audio?id='+encodeURIComponent(t._ytId),wd={};
+        QUALITY_ORDER.forEach(function(q){wd[q]=wu;});
+        t.downloadUrl=wd;t._needsFetch=false;t._ytAt=Date.now();return t;
+      }
       var j=await pipedGet('/streams/'+encodeURIComponent(t._ytId));
       var a=(j.audioStreams||[]).filter(function(s){return s&&s.url&&!/video/.test(s.mimeType||'');});
       var m4a=a.filter(function(s){return /mp4|m4a/i.test((s.mimeType||'')+(s.format||''));});
@@ -5566,6 +5578,7 @@ setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-C
     rows.push('<div class="setting-row"><div class="setting-row-text"><div class="setting-row-title">Default search source</div><div class="setting-row-desc">Used for songs in Search</div></div><div class="setting-row-action"><div class="segmented">'
       +[['jiosaavn','Booster'],['youtube','YouTube']].map(function(s){return '<div class="seg-opt'+(cfg.source===s[0]?' active':'')+'" data-bosp="src" data-val="'+s[0]+'">'+s[1]+'</div>';}).join('')+'</div></div></div>');
     rows.push('<div class="setting-row"><div class="setting-row-text"><div class="setting-row-title">ListenBrainz token</div><div class="setting-row-desc">'+(cfg.lbUser?'Connected as '+esc(cfg.lbUser):'Paste your user token from listenbrainz.org/settings')+'</div></div><div class="setting-row-action"><input id="bosp-lb" type="password" style="'+inp+'" placeholder="token" value="'+esc(cfg.lbToken)+'"><span style="'+btn+'" data-bosp="lbsave">Verify</span></div></div>');
+    rows.push('<div class="setting-row"><div class="setting-row-text"><div class="setting-row-title">YouTube Worker URL</div><div class="setting-row-desc">Recommended. Your Cloudflare Worker (yt-worker.js)</div></div><div class="setting-row-action"><input id="bosp-worker" type="text" style="'+inp+'" placeholder="https://..." value="'+esc(cfg.ytWorker)+'"><span style="'+btn+'" data-bosp="wsave">Save</span></div></div>');
     rows.push('<div class="setting-row"><div class="setting-row-text"><div class="setting-row-title">Custom Piped API</div><div class="setting-row-desc">Optional, e.g. https://pipedapi.example.com</div></div><div class="setting-row-action"><input id="bosp-piped" type="text" style="'+inp+'" placeholder="auto" value="'+esc(cfg.pipedApi)+'"><span style="'+btn+'" data-bosp="pipedsave">Save</span></div></div>');
     return '<div class="settings-group" id="bosp-settings"><div class="settings-group-title">Plugins</div><div class="settings-card glass-1">'+rows.join('')+'</div></div>';
   }
@@ -5601,6 +5614,10 @@ setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-C
       if(u){cfg.lbToken=tk;cfg.lbUser=u;save();toast('Connected to ListenBrainz as '+u,'success');lbFlush();}
       else toast('Invalid token or ListenBrainz unreachable','error');
       renderSettings();
+    }else if(a==='wsave'){
+      var wv=($('#bosp-worker').value||'').trim().replace(/\/+$/,'');
+      if(wv&&!/^https:\/\/[^\s]+$/.test(wv)){toast('Enter a full https:// address','error');return;}
+      cfg.ytWorker=wv;searchCache.clear();save();toast(wv?'YouTube worker saved':'YouTube worker removed','success');
     }else if(a==='pipedsave'){
       var url=($('#bosp-piped').value||'').trim();
       if(url&&!/^https:\/\/[^\s]+$/.test(url)){toast('Enter a full https:// address','error');return;}
