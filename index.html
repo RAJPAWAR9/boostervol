@@ -1342,13 +1342,14 @@ const PPE=(function(){
         base=Math.max(0,sec)-LAG; startedAt=performance.now(); isPlay=true; isEnded=false;
         fire("play"); if(!metaFired){ metaFired=true; fire("loadedmetadata"); fire("durationchange"); } fire("playing");
         /* first seconds stay tappable so a blocked autoplay can be started by tapping the artwork */
-        setTap(true); tapTimer=setTimeout(function(){ tapTimer=0; setTap(false); lastKey=""; },6000);
+        setTap(true); tapTimer=setTimeout(function(){ tapTimer=0; setTap(false); lastKey=""; },12000);
+        if(!window._ppeHint){ window._ppeHint=1; toast("Awaaz na aaye to artwork par tap karo."); }
         res();
       }
       f.addEventListener("load",function(){ ready("load"); });
       setTimeout(function(){ ready("timeout"); },10000);
-      host.appendChild(f);
       f.src=embedBase()+"/embed/"+encodeURIComponent(id)+"?autoplay=1&t="+Math.floor(Math.max(0,sec));
+      host.appendChild(f);
       lastKey=""; place();
     });
   }
