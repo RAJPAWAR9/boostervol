@@ -1418,7 +1418,7 @@ const State = {
   settings: Object.assign({
     theme:"dark", lowEndMode:false, dynamicBg:true, glassEffects:true, animations:true,
     autoplayNext:true, rememberPosition:true, continuePlayback:true,
-    crossfade:true, crossfadeDuration:15, pipedEmbed:true, audioQuality:"160", normalizeVolume:false,
+    crossfade:true, crossfadeDuration:15, adfreeEmbed:false, audioQuality:"160", normalizeVolume:false,
     syncedLyrics:true, lyricsAutoScroll:true, highlightActiveLine:true, lyricsFontSize:"medium", lyricsAnimation:true,
     miniPlayerEnabled:true, dynamicPlayerBg:true, animatedArtwork:true, rememberPlayerState:true
   }, Store.get("settings", {})),
@@ -1737,7 +1737,7 @@ function bestAudioUrl(track){
 function fadeStop(el){ if(!el)return; try{el.pause();}catch(e){} try{el.removeAttribute("src");el.load();}catch(e){} try{el.volume=0;}catch(e){} try{delete el.dataset.boosterTrackId;}catch(e){} }
 async function loadAndPlay(el,track,startAt){
   if(track&&track._yt){
-    if(State.settings.pipedEmbed!==false){ YTV.detach(); return PPE.play(el,track,startAt); }
+    if(State.settings.adfreeEmbed===true){ YTV.detach(); return PPE.play(el,track,startAt); }
     PPE.detach(); return YTV.play(el,track,startAt);
   }
   YTV.detach(); PPE.detach();
@@ -3250,7 +3250,7 @@ function renderSettings(){
     ])
   + group("Playback", [
       rowToggle("Autoplay next track","Continue playing automatically","autoplayNext", s.autoplayNext),
-      rowToggle("Ad-free Piped (embed)","Piped songs play without YouTube ads. Off = YouTube player (ads, but exact sync)","pipedEmbed", s.pipedEmbed),
+      rowToggle("Ad-free Piped (embed, experimental)","On = piped.video embed (no ads, may not play). Off = YouTube player (works, ads possible)","adfreeEmbed", s.adfreeEmbed),
       rowStatic("Smart Radio","Unique-song infinite recommendations"),
       rowCrossfade(s),
       rowToggle("Remember playback position","Resume where you left off","rememberPosition", s.rememberPosition),
