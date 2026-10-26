@@ -5561,7 +5561,7 @@ document.getElementById('view-toplists').addEventListener('click',onClick);
 setInterval(function(){if(State.view==='charts'&&CH.list&&!CH.busy&&Date.now()-CH.at>300000)window.renderCharts(true);if(State.view==='toplists'&&TL.html&&!TL.busy&&Date.now()-TL.at>300000)window.renderToplists(true)},60000);
 })();
 window.BOS_PLAY=function(list,i){return Player.play(list[i],list,i,{autoTransition:false});};window.BOS_TOAST=function(m,t){try{toast(m,t);}catch(e){}};
-try{window.BosApp={State:State,renderMiniPlayer:renderMiniPlayer,renderFullPlayer:renderFullPlayer,renderQueuePanel:renderQueuePanel,SystemMedia:SystemMedia,updateAmbient:updateAmbient,loadLyricsFor:loadLyricsFor,updatePlayIcons:updatePlayIcons,paintProgress:paintProgress,fmtTime:fmtTime,Queue:Queue,History:History,Store:Store,toast:toast,Player:Player,haltJio:function(){try{finalizeCrossfadeIfRunning();}catch(_){}try{State._autoTransitionInFlight=false;State._crossfadeTriggered=false;Player._nextInFlight=false;Player._playToken++;}catch(_){}}};}catch(e){console.warn('BosApp export',e);}
+try{window.BosApp={SmartRadio:(typeof SmartRadio!=="undefined"?SmartRadio:null),State:State,renderMiniPlayer:renderMiniPlayer,renderFullPlayer:renderFullPlayer,renderQueuePanel:renderQueuePanel,SystemMedia:SystemMedia,updateAmbient:updateAmbient,loadLyricsFor:loadLyricsFor,updatePlayIcons:updatePlayIcons,paintProgress:paintProgress,fmtTime:fmtTime,Queue:Queue,History:History,Store:Store,toast:toast,Player:Player,haltJio:function(){try{finalizeCrossfadeIfRunning();}catch(_){}try{State._autoTransitionInFlight=false;State._crossfadeTriggered=false;Player._nextInFlight=false;Player._playToken++;}catch(_){}}};}catch(e){console.warn('BosApp export',e);}
 })();
 </script>
 
@@ -9225,7 +9225,97 @@ function scan(){
   });
   pump();
 }
-new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(scan,250);}).observe(document.body,{childList:true,subtree:true});
+new MutationObserver(function(){if(tm)return;tm=setTimeout(function(){tm=0;scan();},400);}).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+<style id="bos-queue-pro-css">
+#queue-list .q-top{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.06)}
+#queue-list .q-top b{display:block;font-size:14px}#queue-list .q-top small{opacity:.65;font-size:12px}
+#queue-list .q-sw{margin-left:auto;width:46px;height:28px;border-radius:99px;background:rgba(255,255,255,.18);position:relative;border:0;flex:none;cursor:pointer;transition:background .2s}
+#queue-list .q-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+#queue-list .q-sw.on{background:var(--accent,#1db954)}#queue-list .q-sw.on::after{transform:translateX(18px)}
+#queue-list .q-h{display:flex;align-items:center;gap:8px;margin:16px 2px 6px}
+#queue-list .q-h span{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;font-weight:700}
+#queue-list .q-h i{font-style:normal;opacity:.5;font-size:12px}
+#queue-list .q-b{margin-left:auto;border:0;background:rgba(255,255,255,.1);color:inherit;border-radius:99px;padding:5px 11px;font:inherit;font-size:12px;cursor:pointer}
+#queue-list .q-tag{display:inline-block;margin-top:2px;padding:1px 8px;border-radius:99px;font-size:10.5px;background:rgba(255,255,255,.09);opacity:.85}
+#queue-list .q-note{opacity:.6;font-size:13px;padding:10px 4px;line-height:1.5}
+</style>
+<script id="bos-queue-pro">
+/* QUEUE PRO: user queue first, then taste-ranked Autoplay. Uses the Music Personalization profile for ranking. */
+(function(){"use strict";
+var A=window.BosApp;if(!A||!A.Queue||!A.State){return;}
+var S=A.State,Q=A.Queue,seen=new Set(),guard=false,lastH="",obs=null;
+function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9\u0900-\u097f\s]/g,"").trim();}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function taste(){try{return JSON.parse(localStorage.getItem("boosterTaste"))||{};}catch(e){return{};}}
+function prefs(){try{return JSON.parse(localStorage.getItem("boosterPreferences")||"null")||{};}catch(e){return{};}}
+function artistOf(t){return norm(String(t&&t.artistName||"").split(",")[0]);}
+function parts(t){
+  var T=taste(),P=prefs(),a=artistOf(t),l=norm(t&&t.language),d=T.disc==null?.35:T.disc,ae=(T.a||{})[a],aw=ae?Math.max(0,ae.w):0,
+      lw=Math.max(0,(T.l||{})[l]||0),tr=(T.t||{})[t&&t.id]||{},pa=(P.artists||[]).some(function(x){return norm(x)===a;}),pl=(P.languages||[]).some(function(x){return norm(x)===l;});
+  if(pa)aw+=10;if(pl)lw+=8;
+  var known=aw>0,sc=Math.min(40,aw*2.2)+Math.min(20,lw*1.2)+(tr.l||0)*15+(tr.c||0)*6+(tr.p||0)*2-(tr.s||0)*14;
+  var fin=sc*(1-d)+(known?0:18*d)+Math.random()*4;
+  return{score:fin,top:aw>=10,lang:lw>=8,fresh:!known,liked:!!tr.l};
+}
+function reason(t){var p=parts(t);return p.liked?"You liked this":p.top?"Your top artist":p.lang?"Matches your language":p.fresh?"Fresh for you":"Similar vibe";}
+/* mark + rank the autoplay tail whenever Smart Radio adds songs */
+var persist=Q.persist;
+Q.persist=function(){
+  try{
+    var ids=S.queue.map(function(t){return t&&t.id;}),added=[];
+    S.queue.forEach(function(t,i){if(t&&!seen.has(t.id)){seen.add(t.id);if(S.smartQueueBusy&&i>S.queueIndex){t._auto=1;added.push(i);}}});
+    if(S.settings&&S.settings.autoplayNext===false&&S.queue.some(function(t){return t&&t._auto&&true;})){
+      var keep=S.queue.filter(function(t,i){return i<=S.queueIndex||!t._auto;});if(keep.length!==S.queue.length){S.queue=keep;S.shuffleOrder=[];}
+    }else if(added.length&&!S.shuffle){
+      var cut=S.queue.length;while(cut>S.queueIndex+1&&S.queue[cut-1]&&S.queue[cut-1]._auto)cut--;
+      var tail=S.queue.slice(cut).map(function(t){return{t:t,s:parts(t).score};}).sort(function(x,y){return y.s-x.s;}),out=[],last="";
+      while(tail.length){var k=tail.findIndex(function(x){return artistOf(x.t)!==last;});if(k<0)k=0;var x=tail.splice(k,1)[0];out.push(x.t);last=artistOf(x.t);}
+      S.queue=S.queue.slice(0,cut).concat(out);
+    }
+  }catch(e){}
+  return persist.apply(this,arguments);
+};
+/* "Add to queue" goes BEFORE the autoplay songs; "Play next" goes right after the current song */
+function insertUser(track,next){
+  var pos=S.queue.length;
+  if(next)pos=S.queueIndex+1;else while(pos>S.queueIndex+1&&S.queue[pos-1]&&S.queue[pos-1]._auto)pos--;
+  S.queue.splice(pos,0,track);Q.persist();
+}
+var add=Q.addToQueue;
+Q.addToQueue=function(t){if(S.shuffle||!t||S.queueIndex<0)return add.apply(this,arguments);t=Object.assign({},t);delete t._auto;insertUser(t,false);try{A.toast("Added to queue");}catch(e){}};
+Q.playNext=function(t){t=Object.assign({},t);delete t._auto;insertUser(t,true);try{A.toast("Playing next");}catch(e){}};
+/* panel */
+function row(t,i,on,tag){
+  return '<div class="row-item'+(on?" playing":"")+'" data-action="play-queue-index" data-index="'+i+'"><div class="row-art"><img src="'+esc(t.image)+'" loading="lazy" alt=""></div><div class="row-meta"><div class="row-title">'+esc(t.name)+'</div><div class="row-sub">'+esc(t.artistName)+'</div>'+(tag?'<span class="q-tag">'+esc(tag)+'</span>':'')+'</div>'
+   +(on?'<div class="eq-bars"><span></span><span></span><span></span></div>':'<button class="ctrl-btn" data-action="remove-queue-index" data-index="'+i+'" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>')+'</div>';
+}
+function render(){
+  var box=document.getElementById("queue-list");if(!box||!S.queue.length||guard)return;
+  var cur=S.queue[S.queueIndex],up=[],au=[];
+  S.queue.forEach(function(t,i){if(i<=S.queueIndex||!t)return;(t._auto?au:up).push({t:t,i:i});});
+  var on=!(S.settings&&S.settings.autoplayNext===false),h='';
+  h+='<div class="q-top"><div><b>Autoplay</b><small>'+(on?"Keeps music going with songs you'll like":"Off · stops when the queue ends")+'</small></div><button class="q-sw'+(on?" on":"")+'" data-q="sw" aria-label="Autoplay"></button></div>';
+  if(cur)h+='<div class="q-h"><span>Now playing</span></div><div class="row-list">'+row(cur,S.queueIndex,true)+'</div>';
+  if(up.length)h+='<div class="q-h"><span>Next in queue</span><i>'+up.length+'</i><button class="q-b" data-q="clearup">Clear</button></div><div class="row-list">'+up.map(function(x){return row(x.t,x.i,false);}).join("")+'</div>';
+  if(on&&au.length)h+='<div class="q-h"><span>Autoplay</span><i>'+au.length+' · based on '+esc(cur?cur.name:"")+'</i><button class="q-b" data-q="refresh">Refresh</button></div><div class="row-list">'+au.map(function(x){return row(x.t,x.i,false,reason(x.t));}).join("")+'</div>';
+  else if(on)h+='<div class="q-note">Autoplay is finding songs for you…</div>';
+  if(h===lastH)return;lastH=h;
+  guard=true;box.innerHTML=h;guard=false;
+  if(obs)obs.takeRecords();   /* drop our own mutation so it can never re-trigger render (was an endless loop) */
+}
+function save(){try{A.Store.set("settings",S.settings);}catch(e){}}
+document.addEventListener("click",function(e){
+  var b=e.target.closest&&e.target.closest("#queue-list [data-q]");if(!b)return;e.stopPropagation();var k=b.dataset.q;
+  if(k==="sw"){S.settings.autoplayNext=S.settings.autoplayNext===false;save();if(S.settings.autoplayNext&&A.SmartRadio)A.SmartRadio.refill(8);else Q.persist();render();}
+  if(k==="clearup"){S.queue=S.queue.filter(function(t,i){return i<=S.queueIndex||t._auto;});S.shuffleOrder=[];Q.persist();render();}
+  if(k==="refresh"){S.queue=S.queue.filter(function(t,i){return i<=S.queueIndex||!t._auto;});S.shuffleOrder=[];Q.persist();render();if(A.SmartRadio)A.SmartRadio.refill(8);}
+},true);
+var box=document.getElementById("queue-list");
+if(box){var pend=0;obs=new MutationObserver(function(){if(guard||pend)return;pend=setTimeout(function(){pend=0;render();},60);});obs.observe(box,{childList:true});}
+S.queue.forEach(function(t){if(t)seen.add(t.id);});
 })();
 </script>
 
