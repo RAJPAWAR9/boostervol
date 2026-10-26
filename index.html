@@ -1861,7 +1861,7 @@ function lyScore(h,info){
   const ts=Math.max(0,...info.titles.map(t=>lyricsSimilarity(t,tn)));
   const as=an&&info.artists.length?Math.max(...info.artists.map(a=>lyricsSimilarity(a,an))):.4;
   let s=ts*.62+as*.28; const hd=Number(h.duration)||0, df=hd&&info.dur?Math.abs(hd-info.dur):99;
-  if(hd&&info.dur) s+= df<=2?.1:df<=5?.05:df<=9?-.04:-.3;
+  if(hd&&info.dur) s+= df<=2?.1:df<=5?.05:(info.track&&info.track.source==="youtube"?(df<=25?0:-.08):(df<=9?-.04:-.3));   /* YouTube videos are often longer than the studio song */
   return {s,ts,df};
 }
 function lyPlainLines(text){
@@ -2376,7 +2376,7 @@ function ytLyricTracks(track){
   const add=(name,artist)=>{
     name=noFeat(String(name||"").trim()); artist=String(artist||"").trim();
     const k=lyricsNorm(name)+"|"+lyricsNorm(artist);
-    if(name&&!seen.has(k)){ seen.add(k); out.push({id:track.id,name:name,artistName:artist,albumName:"",duration:0,source:"youtube"}); }
+    if(name&&!seen.has(k)){ seen.add(k); out.push({id:track.id,name:name,artistName:artist,albumName:"",duration:Math.round(Number(track.duration)||0),source:"youtube"}); }
   };
   const m=head.split(/\s+[-–—:]\s+/);
   if(m.length>=2){
@@ -2389,7 +2389,13 @@ function ytLyricTracks(track){
     if(last) add(head,last);
     add(head,ch); add(head,"");
   }
-  return out.slice(0,3);
+  /* clean title / artist / album from MusicBrainz, TheAudioDB or iTunes (auto-meta) goes first */
+  try{
+    const mc=JSON.parse(localStorage.getItem("bos_meta_v1")||"{}"), nm=String(track.name||"");
+    const m=mc["y|"+nm+"|"+(track.artistName||"")]||mc["y|"+nm+"|"+(track.artistName||"")+" - Topic"];
+    if(m&&m.title&&m.artist&&!seen.has(lyricsNorm(m.title)+"|"+lyricsNorm(m.artist))) out.unshift({id:track.id,name:m.title,artistName:m.artist,albumName:m.album||"",duration:Math.round(Number(track.duration)||0),source:"youtube"});
+  }catch(e){}
+  return out.slice(0,4);
 }
 async function fetchLyricsSmart(track,signal){
   if(!track||track.source!=="youtube") return fetchLyricsExpanded(track,signal);
@@ -2768,7 +2774,7 @@ function renderSearchView(){
     const card=e.target.closest(".yt-card"); if(card){ openYtCollection(State._ytCards&&State._ytCards[card.dataset.ytkey]); return; }
     const b=e.target.closest(".yt-res"); if(!b) return;
     if(document.activeElement===input) input.blur();
-    window.BosYT.play(State._ytRes||[], +b.dataset.yi);
+    { const _r=(State._ytRes||[])[+b.dataset.yi]; if(_r) window.BosYT.play([_r], 0); }   /* only the tapped song; Autoplay adds the rest */
   });
   /* scrolling the results hides the keyboard */
   const vsEl=$("#view-scroll");
@@ -3050,7 +3056,7 @@ document.addEventListener("click", async function(e){
     const _clk=(window.__playClk=(window.__playClk||0)+1);
     t = await resolvePlayableTrack(t); if(!t||_clk!==window.__playClk) return;
     const ctxKey = el.dataset.ctx;
-    const ctxList = ctxKey ? ctxStore.get(ctxKey) : null;
+    const ctxList = (ctxKey && !/^search/.test(ctxKey)) ? ctxStore.get(ctxKey) : null;   /* search result -> queue is just this song, then Autoplay fills it (no list of same-name versions) */
     const idx = ctxList ? ctxList.findIndex(x=>x.id===t.id) : 0;
     Player.play(t, ctxList && ctxList.length ? ctxList : [t], idx>=0?idx:0, {autoTransition:false});
     refreshRowStates();
@@ -8825,12 +8831,14 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
       try { if (window.BosYT && window.BosYT.next) window.BosYT.next(true); } catch (e) {}
     }
     function audio(){
-      if (Y.au) return Y.au;
+      if (Y.au) return Y.au; Y.au = mkAudio(); return Y.au;
+    }
+    function mkAudio(){
       var a = document.createElement('audio');
       a.id = 'yt-audio-el'; a.preload = 'auto'; a.setAttribute('playsinline', '');
       a.addEventListener('error', function(){ if (a.getAttribute('src')) Y.fail(a._tok); });
-      a.addEventListener('ended', function(){ if (Y.mode !== 'audio' || !Y.on) return; onEnded(); });
-      document.body.append(a); Y.au = a; return a;
+      a.addEventListener('ended', function(){ if (Y.mode !== 'audio' || !Y.on || Y.xfBusy) return; onEnded(); });
+      document.body.append(a); return a;
     }
     function stopAudio(){
       clearTimeout(Y.wd);
@@ -8838,6 +8846,7 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
     }
     // start a song: fastest server first; if it errors or stalls, the next server is tried automatically
     Y.start = function(id, start){
+      if (Y.pre && Y.pre.id !== id) killPre();
       Y.id = id; Y.tried = []; Y.base = start || 0; Y.playing = true; Y.mode = 'audio';
       if (Y.fr) Y.fr.src = 'about:blank';
       Y.next(); icons();
@@ -8847,6 +8856,12 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
       var h = ranked().filter(function(x){ return Y.tried.indexOf(x) < 0; })[0];
       if (!h) { Y.mode = 'iframe'; stopAudio(); Y.load(best(), Y.id, Y.base); return; }   // last resort
       Y.tried.push(h); Y.host = h;
+      var pre = (Y.pre && Y.pre.id === Y.id && !Y.pre.bad && !(Y.base > 1)) ? Y.pre : null;
+      if (pre) {   // the next song was already buffered in the background: use it, start is instant
+        Y.pre = null; var oe = Y.au;
+        if (oe && oe !== pre.a) { try { oe.pause(); oe.removeAttribute('src'); oe.load(); if (oe.remove) oe.remove(); } catch (e) {} }
+        Y.au = pre.a; h = pre.host; Y.host = h; Y.tried = [h];
+      }
       var a = audio(), t0 = performance.now(), startAt = Y.base;
       clearTimeout(Y.wd); a._tok = tok;
       a.onloadedmetadata = function(){
@@ -8858,8 +8873,8 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
         if (tok !== Y.tok) return;
         clearTimeout(Y.wd); markGood(h, performance.now() - t0); Y.tried = [h];
       };
-      a.src = h + '/latest_version?id=' + enc(Y.id) + '&itag=140&local=true';
-      a.volume = Y.vol; a.muted = Y.muted; a.playbackRate = Y.rate;
+      if (!pre) a.src = h + '/latest_version?id=' + enc(Y.id) + '&itag=140&local=true';
+      a.volume = Y.xfIn ? 0 : Y.vol; a.muted = Y.muted; a.playbackRate = Y.rate;
       var p = a.play();
       if (p && p.catch) p.catch(function(e){
         if (tok !== Y.tok) return;
@@ -8873,6 +8888,52 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
       var pos = Y.au && Y.au.currentTime; if (pos > 1) Y.base = pos;   // keep the position when a server drops mid-song
       Y.next();
     };
+
+
+    // ---------- pre-load the NEXT song in the background so it starts instantly ----------
+    function killPre(){ var p = Y.pre; Y.pre = null; if (p && p.a) { try { p.a.pause(); p.a.removeAttribute('src'); p.a.load(); if (p.a.remove) p.a.remove(); } catch (e) {} } }
+    function prep(t){
+      var id = vidOf(t); if (!id || (Y.pre && Y.pre.id === id)) return;
+      killPre(); var hst = ranked()[0]; if (!hst) return;
+      var a = mkAudio(); a.id = 'yt-audio-pre'; a.preload = 'auto'; a.volume = 0;
+      var rec = { id: id, a: a, host: hst, bad: false };
+      a.addEventListener('error', function(){ rec.bad = true; });
+      a.src = hst + '/latest_version?id=' + enc(id) + '&itag=140&local=true'; try { a.load(); } catch (e) {}
+      Y.pre = rec;
+    }
+    // ---------- CROSSFADE (BOOSTER +): next song starts on its own audio element while this one fades out ----------
+    function startXF(old, cf){
+      try { toast('Crossfading…'); } catch (x) {} try { console.log('[BOOSTER+] crossfade start'); } catch (x) {}
+      Y.xfBusy = true; Y.xfIn = true; Y.au = null;
+      var t0 = 0, len = 0, started = false, iv = 0;
+      function done(){ clearInterval(iv); try { old.pause(); old.removeAttribute('src'); old.load(); if (old.remove) old.remove(); } catch (x) {} Y.xfIn = false; Y.xfBusy = false; if (Y.au) try { Y.au.volume = Y.vol; } catch (x) {} }
+      Promise.resolve(window.BosYT.next(true)).then(function(ok){ if (ok === false) { clearInterval(iv); Y.au = old; try { old.volume = Y.vol; } catch (x) {} Y.xfIn = false; Y.xfBusy = false; } }, function(){ clearInterval(iv); Y.au = old; try { old.volume = Y.vol; } catch (x) {} Y.xfIn = false; Y.xfBusy = false; });
+      iv = setInterval(function(){
+        var n = Y.au, od = (isFinite(old.duration) && old.duration > 0) ? old.duration : (Y.xfDur || 0), rem = od - (old.currentTime || 0);
+        if (!started) {
+          if (n && n !== old && !n.paused && n.readyState >= 3 && n.currentTime > 0) { started = true; t0 = Date.now(); len = Math.max(1, rem - .7); }
+          else { if (old.ended || rem < .8) done(); return; }   // next song was too slow: no crossfade, plain switch
+        }
+        var p = Math.min(1, (Date.now() - t0) / (len * 1000));
+        try { old.volume = Math.max(0, Y.vol * (1 - p)); } catch (x) {}
+        try { if (n && n !== old) n.volume = Y.vol * p; } catch (x) {}
+        if (p >= 1) done();
+      }, 80);
+    }
+    setInterval(function(){
+      try {
+        if (!Y.on || Y.mode !== 'audio' || !Y.playing || Y.xfBusy) return;
+        var St = State, st = St.settings || {}; if (st.crossfade === false || st.autoplayNext === false || St.repeat === 'one') return;
+        var e = Y.au; if (!e) return;
+        var d = (isFinite(e.duration) && e.duration > 0) ? e.duration : Y.dur, cf = Math.min(+st.crossfadeDuration || 8, 12);   // streams can report Infinity: use the known song length
+        if (!d || !isFinite(d) || d < cf * 2.5) return;
+        var rem = d - e.currentTime, ni = St.shuffle ? St.shuffleOrder[0] : St.queueIndex + 1, nt = St.queue[ni];
+        if (rem <= 50 && rem > 1 && nt && nt.source === 'youtube') prep(nt);
+        if (rem > cf + 1 || rem <= 1) return; Y.xfDur = d;
+        if (!nt || nt.source !== 'youtube') { if (!St.queue[ni]) { try { refillRelated(false); } catch (x) {} } return; }
+        startXF(e, cf);
+      } catch (x) {}
+    }, 250);
 
     // ---------- iframe fallback (old method) ----------
     function frame(){
@@ -8942,7 +9003,7 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
       Y.load(isCool(Y.host) ? best() : Y.host, Y.id, Y.base);
     };
     Y.off = function(){
-      Y.on = false; Y.playing = false; Y.base = 0; Y.mode = ''; Y.tok++; clearTimeout(Y.tm);
+      Y.on = false; Y.playing = false; Y.base = 0; Y.mode = ''; Y.tok++; clearTimeout(Y.tm); killPre();
       stopAudio();
       if (Y.fr) Y.fr.src = 'about:blank';
     };
@@ -9044,7 +9105,7 @@ window.__bosLyricFix={fixLine:fixLine,demoji:demoji};
         have[id] = 1; fams[f] = 1; out.push(mkTrack(v));
       }
       if (out.length) {
-        var start = S2.queue.length; S2.queue.push.apply(S2.queue, out);
+        out.forEach(function(t){ t._auto = 1; }); var start = S2.queue.length; S2.queue.push.apply(S2.queue, out);
         if (S2.shuffle) for (var j = start; j < S2.queue.length; j++) S2.shuffleOrder.push(j);
         Q.persist(); try { window.BosApp.renderQueuePanel(); } catch (e) {}
         added = true;
@@ -9232,7 +9293,8 @@ new MutationObserver(function(){if(tm)return;tm=setTimeout(function(){tm=0;scan(
 <style id="bos-queue-pro-css">
 #queue-list .q-top{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.06)}
 #queue-list .q-top b{display:block;font-size:14px}#queue-list .q-top small{opacity:.65;font-size:12px}
-#queue-list .q-sw{margin-left:auto;width:46px;height:28px;border-radius:99px;background:rgba(255,255,255,.18);position:relative;border:0;flex:none;cursor:pointer;transition:background .2s}
+#bos-ap{display:none!important}
+#queue-list .q-sw{width:46px;height:28px;border-radius:99px;background:rgba(255,255,255,.18);position:relative;border:0;flex:none;cursor:pointer;transition:background .2s}
 #queue-list .q-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
 #queue-list .q-sw.on{background:var(--accent,#1db954)}#queue-list .q-sw.on::after{transform:translateX(18px)}
 #queue-list .q-h{display:flex;align-items:center;gap:8px;margin:16px 2px 6px}
@@ -9260,13 +9322,20 @@ function parts(t){
   var fin=sc*(1-d)+(known?0:18*d)+Math.random()*4;
   return{score:fin,top:aw>=10,lang:lw>=8,fresh:!known,liked:!!tr.l};
 }
+var NZ=/^(official|lyrical?|lyrics?|video|audio|full|song|songs|hd|4k|music|visuali[sz]er|mv)(\s|$)/i;
+function disp(t){
+  if(!t||t.source!=="youtube")return{n:t&&t.name,a:t&&t.artistName};
+  try{var m=(JSON.parse(localStorage.getItem("bos_meta_v1")||"{}"))["y|"+t.name+"|"+(t.artistName||"")];if(m&&m.title)return{n:m.title,a:m.artist||t.artistName};}catch(e){}
+  var s=String(t.name||"").replace(/\s*[\(\[][^\)\]]*[\)\]]/g,"").split(/\s*\|\s*/)[0].split(/\s+[-\u2013\u2014]\s+/).filter(function(x){return x&&!NZ.test(x.trim());}).slice(0,2).join(" \u2013 ").trim();
+  return{n:s||t.name,a:String(t.artistName||"").replace(/\s*-\s*Topic$/i,"")};
+}
 function reason(t){var p=parts(t);return p.liked?"You liked this":p.top?"Your top artist":p.lang?"Matches your language":p.fresh?"Fresh for you":"Similar vibe";}
 /* mark + rank the autoplay tail whenever Smart Radio adds songs */
 var persist=Q.persist;
 Q.persist=function(){
   try{
     var ids=S.queue.map(function(t){return t&&t.id;}),added=[];
-    S.queue.forEach(function(t,i){if(t&&!seen.has(t.id)){seen.add(t.id);if(S.smartQueueBusy&&i>S.queueIndex){t._auto=1;added.push(i);}}});
+    S.queue.forEach(function(t,i){if(t&&!seen.has(t.id)){seen.add(t.id);if(i>S.queueIndex&&(t._auto||S.smartQueueBusy)){t._auto=1;added.push(i);}}});
     if(S.settings&&S.settings.autoplayNext===false&&S.queue.some(function(t){return t&&t._auto&&true;})){
       var keep=S.queue.filter(function(t,i){return i<=S.queueIndex||!t._auto;});if(keep.length!==S.queue.length){S.queue=keep;S.shuffleOrder=[];}
     }else if(added.length&&!S.shuffle){
@@ -9289,7 +9358,8 @@ Q.addToQueue=function(t){if(S.shuffle||!t||S.queueIndex<0)return add.apply(this,
 Q.playNext=function(t){t=Object.assign({},t);delete t._auto;insertUser(t,true);try{A.toast("Playing next");}catch(e){}};
 /* panel */
 function row(t,i,on,tag){
-  return '<div class="row-item'+(on?" playing":"")+'" data-action="play-queue-index" data-index="'+i+'"><div class="row-art"><img src="'+esc(t.image)+'" loading="lazy" alt=""></div><div class="row-meta"><div class="row-title">'+esc(t.name)+'</div><div class="row-sub">'+esc(t.artistName)+'</div>'+(tag?'<span class="q-tag">'+esc(tag)+'</span>':'')+'</div>'
+  var d=disp(t);
+  return '<div class="row-item'+(on?" playing":"")+'" data-action="play-queue-index" data-index="'+i+'"><div class="row-art"><img src="'+esc(t.image)+'" loading="lazy" alt=""></div><div class="row-meta"><div class="row-title">'+esc(d.n)+'</div><div class="row-sub">'+esc(d.a)+'</div>'+(tag?'<span class="q-tag">'+esc(tag)+'</span>':'')+'</div>'
    +(on?'<div class="eq-bars"><span></span><span></span><span></span></div>':'<button class="ctrl-btn" data-action="remove-queue-index" data-index="'+i+'" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>')+'</div>';
 }
 function render(){
@@ -9297,7 +9367,7 @@ function render(){
   var cur=S.queue[S.queueIndex],up=[],au=[];
   S.queue.forEach(function(t,i){if(i<=S.queueIndex||!t)return;(t._auto?au:up).push({t:t,i:i});});
   var on=!(S.settings&&S.settings.autoplayNext===false),h='';
-  h+='<div class="q-top"><div><b>Autoplay</b><small>'+(on?"Keeps music going with songs you'll like":"Off · stops when the queue ends")+'</small></div><button class="q-sw'+(on?" on":"")+'" data-q="sw" aria-label="Autoplay"></button></div>';
+  h+='<div class="q-top"><div><b>Autoplay</b><small>'+(on?"Keeps music going with songs you'll like":"Off · stops when the queue ends")+'</small></div><button class="q-b" data-q="radio" style="margin-left:auto">New radio</button><button class="q-sw'+(on?" on":"")+'" style="margin-left:10px" data-q="sw" aria-label="Autoplay"></button></div>';
   if(cur)h+='<div class="q-h"><span>Now playing</span></div><div class="row-list">'+row(cur,S.queueIndex,true)+'</div>';
   if(up.length)h+='<div class="q-h"><span>Next in queue</span><i>'+up.length+'</i><button class="q-b" data-q="clearup">Clear</button></div><div class="row-list">'+up.map(function(x){return row(x.t,x.i,false);}).join("")+'</div>';
   if(on&&au.length)h+='<div class="q-h"><span>Autoplay</span><i>'+au.length+' · based on '+esc(cur?cur.name:"")+'</i><button class="q-b" data-q="refresh">Refresh</button></div><div class="row-list">'+au.map(function(x){return row(x.t,x.i,false,reason(x.t));}).join("")+'</div>';
@@ -9311,11 +9381,15 @@ document.addEventListener("click",function(e){
   var b=e.target.closest&&e.target.closest("#queue-list [data-q]");if(!b)return;e.stopPropagation();var k=b.dataset.q;
   if(k==="sw"){S.settings.autoplayNext=S.settings.autoplayNext===false;save();if(S.settings.autoplayNext&&A.SmartRadio)A.SmartRadio.refill(8);else Q.persist();render();}
   if(k==="clearup"){S.queue=S.queue.filter(function(t,i){return i<=S.queueIndex||t._auto;});S.shuffleOrder=[];Q.persist();render();}
-  if(k==="refresh"){S.queue=S.queue.filter(function(t,i){return i<=S.queueIndex||!t._auto;});S.shuffleOrder=[];Q.persist();render();if(A.SmartRadio)A.SmartRadio.refill(8);}
+  if(k==="radio"){if(!S.currentTrack)return;S.queue.splice(S.queueIndex+1);S.shuffleOrder=[];Q.persist();
+    if(S.currentTrack.source==="youtube"&&window.BosYT&&window.BosYT.radio)window.BosYT.radio().then(render);
+    else if(A.SmartRadio){S.smartRadioRefillToken++;S.smartQueueBusy=false;try{A.toast("Building radio…");}catch(x){}A.SmartRadio.refill(24).then(render);}render();}
+  if(k==="refresh"){S.queue=S.queue.filter(function(t,i){return i<=S.queueIndex||!t._auto;});S.shuffleOrder=[];Q.persist();render();if(S.currentTrack&&S.currentTrack.source==="youtube"&&window.BosYT&&window.BosYT.radio){var kp=S.queue.slice();window.BosYT.radio().then(function(){S.queue=kp.filter(function(t,i){return i<=S.queueIndex||!t._auto;}).concat(S.queue.slice(S.queueIndex+1).filter(function(t){return t._auto;}));render();});}else if(A.SmartRadio)A.SmartRadio.refill(8);}
 },true);
 var box=document.getElementById("queue-list");
 if(box){var pend=0;obs=new MutationObserver(function(){if(guard||pend)return;pend=setTimeout(function(){pend=0;render();},60);});obs.observe(box,{childList:true});}
 S.queue.forEach(function(t){if(t)seen.add(t.id);});
+var qp=document.getElementById('queue-panel');if(qp)new MutationObserver(function(){setTimeout(render,80);}).observe(qp,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 
